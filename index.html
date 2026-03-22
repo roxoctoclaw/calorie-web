@@ -506,12 +506,11 @@ function filterFoods() {
 
 function renderCookingMethods() {
     document.getElementById('cookingMethods').innerHTML = cookingMethods.map((method, idx) => `
-        <div class="border-2 border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center cursor-pointer transition-colors ${idx === 0 ? 'border-primary bg-primary/10' : 'hover:border-primary'}" onclick="selectCooking(${idx})">
+        <div class="border-2 ${selectedCooking === method ? 'border-primary bg-primary/10' : 'border-slate-200 dark:border-slate-700 hover:border-primary'} rounded-lg p-2 text-center cursor-pointer transition-colors" onclick="selectCooking(${idx})">
             <div class="text-sm">${getCookingName(method)}</div>
             <div class="text-xs text-slate-500">${method.calChange > 0 ? '+' + method.calChange : method.calChange}</div>
         </div>
     `).join('');
-    selectedCooking = cookingMethods[0];
 }
 
 function selectCooking(idx) {
@@ -730,6 +729,10 @@ function generateMealPlan() {
 // Init - wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing...');
+    // Initialize selected cooking method
+    if (!selectedCooking && cookingMethods.length > 0) {
+        selectedCooking = cookingMethods[0];
+    }
     if (localStorage.getItem('darkMode') === 'true') {
         document.documentElement.classList.add('dark');
         var darkBtn = document.getElementById('darkToggle');
