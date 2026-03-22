@@ -666,14 +666,8 @@ function updateTeaTotal() {
 }
 
 function removeTeaItem(idx) {
-    console.log('removeTeaItem called with idx:', idx, 'teaSelections length:', teaSelections.length);
     if (idx >= 0 && idx < teaSelections.length) {
-        const removed = teaSelections.splice(idx, 1);
-        console.log('Removed:', removed[0].name, 'Remaining:', teaSelections.length);
-        renderTeaRestaurant();
-    } else {
-        console.log('Invalid index, clearing selections');
-        teaSelections = [];
+        teaSelections.splice(idx, 1);
         renderTeaRestaurant();
     }
 }
