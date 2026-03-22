@@ -657,11 +657,18 @@ function updateTeaTotal() {
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="font-semibold">${item.calories} cal</span>
-                        <button onclick="toggleTeaItem('${item.type}', ${teaSelections.findIndex(s => s.name === item.name && s.type === item.type)})" class="text-red-500 hover:text-red-700 text-xl">×</button>
+                        <button onclick="removeTeaItem(${idx})" class="text-red-500 hover:text-red-700 text-xl font-bold">×</button>
                     </div>
                 </div>
             `).join('');
         }
+    }
+}
+
+function removeTeaItem(idx) {
+    if (idx >= 0 && idx < teaSelections.length) {
+        teaSelections.splice(idx, 1);
+        renderTeaRestaurant();
     }
 }
 
