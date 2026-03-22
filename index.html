@@ -56,7 +56,10 @@
 
         <!-- Tabs -->
         <div class="flex gap-3 mb-5 flex-wrap" id="tabs">
-            <button class="tab-active px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="profile" onclick="switchTab('profile')">
+            <button class="tab-active px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="home" onclick="switchTab('home')">
+                <span>主頁</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="profile" onclick="switchTab('profile')">
                 <span data-i18n="tab.profile">個人資料</span>
             </button>
             <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="search" onclick="switchTab('search')">
@@ -71,6 +74,149 @@
             <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="tearestaurant" onclick="switchTab('tearestaurant')">
                 <span data-i18n="tab.tearestaurant">茶餐廳</span>
             </button>
+        </div>
+
+        <!-- Home/Landing Tab -->
+        <div id="home" class="tab-content">
+            <div class="bg-white rounded-3xl overflow-hidden">
+                <!-- Hero Section -->
+                <div class="relative bg-gradient-to-b from-slate-50 to-white py-24 px-8 text-center">
+                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                        卡路里幫手
+                    </h1>
+                    <p class="text-3xl md:text-5xl font-semibold text-slate-600 mb-8" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                        Calorie Helper
+                    </p>
+                    <p class="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+                        Personalised Weight Loss for Hong Kong<br/>
+                        <span class="text-lg">為香港人而設的個人化減肥方案</span>
+                    </p>
+                    <div class="mt-12 flex justify-center gap-4">
+                        <button onclick="switchTab('profile')" class="bg-slate-900 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 transition-all hover:scale-105">
+                            Get Started 開始使用
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Image - Hong Kong Breakfast -->
+                <div class="relative py-16 px-8 bg-gradient-to-t from-slate-100 to-white">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop" 
+                                 alt="Hong Kong Breakfast" 
+                                 class="w-full h-96 object-cover">
+                            <div class="absolute bottom-6 left-6 flex gap-3">
+                                <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 143 cal</span>
+                                <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 61 cal</span>
+                                <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 207 cal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 1: Why We Built This -->
+                <div class="py-24 px-8 bg-white">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                            WHY WE BUILT THIS
+                        </h2>
+                        <p class="text-3xl font-semibold text-slate-800 mb-8">
+                            點解整呢個？
+                        </p>
+                        <p class="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
+                            Empowering Hong Kong people to lose weight without guessing calories in local cha chaan teng & Wellcome/ParknShop food.<br/><br/>
+                            <span class="text-lg">幫助香港人唔使估下估計算卡路里，咁就可以喺茶餐廳、惠康、百佳放心食嘢減肥。</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 2: What Is Calorie Helper -->
+                <div class="py-24 px-8 bg-slate-50">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-16 text-center" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                            WHAT IS CALORIE HELPER
+                        </h2>
+                        <div class="grid md:grid-cols-3 gap-12">
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    <span class="text-4xl">📊</span>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">BMR Calculator<br/>基礎代謝率計算</h3>
+                                <p class="text-slate-600">根據你既年齡、身高、體重、性別同活動量，計算每日所需卡路里</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    <span class="text-4xl">🍽️</span>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">Meal Planner<br/>餐單制定</h3>
+                                <p class="text-slate-600">自動生成個人化減肥餐單，根據你既目標同偏好</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    <span class="text-4xl">🛒</span>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">Supermarket Prices<br/>超市價錢</h3>
+                                <p class="text-slate-600">顯示惠康、百佳既最新價錢，方便你既屋企煮埋一份</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: How To Use -->
+                <div class="py-24 px-8 bg-white">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-16 text-center" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                            HOW TO USE
+                        </h2>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">
+                                    1
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">Enter Your Data<br/>輸入個人資料</h3>
+                                <p class="text-slate-600">輸入你既年齡、身高、體重，計算 BMR 同每日所需卡路里</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">
+                                    2
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">Search Local Foods<br/>搜尋本地食物</h3>
+                                <p class="text-slate-600">搜尋茶餐廳食物同超市食材，睇埋卡路里同價錢</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">
+                                    3
+                                </div>
+                                <h3 class="text-2xl font-semibold text-slate-900 mb-4">Get Your Plan<br/>獲取餐單</h3>
+                                <p class="text-slate-600">一click生成個人化減肥餐單，跟住食就得</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: More Information -->
+                <div class="py-24 px-8 bg-slate-900 text-white">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-8" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                            MORE INFORMATION
+                        </h2>
+                        <p class="text-xl text-slate-300 mb-8">
+                            了解更多
+                        </p>
+                        <div class="flex justify-center gap-6 mb-12">
+                            <a href="https://github.com/roxoctoclaw/calorie-web" target="_blank" 
+                               class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-medium hover:bg-slate-200 transition-all">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                GitHub
+                            </a>
+                        </div>
+                        <div class="text-sm text-slate-500">
+                            <p class="mb-2">Data Sources 資料來源:</p>
+                            <p>Calorie data from USDA FoodData Central • Prices from Wellcome & ParknShop Hong Kong 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Profile Tab -->
