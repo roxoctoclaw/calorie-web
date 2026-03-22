@@ -68,6 +68,9 @@
             <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="generator" onclick="switchTab('generator')">
                 <span data-i18n="tab.generator">自動生成餐單</span>
             </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="tearestaurant" onclick="switchTab('tearestaurant')">
+                <span data-i18n="tab.tearestaurant">茶餐廳</span>
+            </button>
         </div>
 
         <!-- Profile Tab -->
@@ -227,6 +230,20 @@
                 <div id="generatedPlan" class="mt-5"></div>
             </div>
         </div>
+
+        <!-- Tea Restaurant Tab -->
+        <div id="tearestaurant" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="tea.title">香港茶餐廳美食</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-4" data-i18n="tea.desc">常見茶餐廳食物同飲品既卡路里參考</p>
+                
+                <h3 class="font-semibold text-primary-dark mb-3" data-i18n="tea.dishes">🥢 常見主食</h3>
+                <div class="space-y-3 mb-6" id="teaDishes"></div>
+                
+                <h3 class="font-semibold text-primary-dark mb-3" data-i18n="tea.drinks">🧋 飲品</h3>
+                <div class="space-y-3" id="teaDrinks"></div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -234,7 +251,7 @@ const i18n = {
     zh: {
         title: "卡路里幫手",
         subtitle: "個人化減肥餐單 | 惠康/百佳價錢 | 根據你既身體數據",
-        tab: { profile: "個人資料", search: "食物搜尋", calculator: "卡路里計算機", generator: "自動生成餐單" },
+        tab: { profile: "個人資料", search: "食物搜尋", calculator: "卡路里計算機", generator: "自動生成餐單", tearestaurant: "茶餐廳" },
         profile: {
             title: "輸入你既個人資料",
             desc: "我會根據你既年齡、身高、體重計算每日所需卡路里",
@@ -264,7 +281,8 @@ const i18n = {
         cooking: { "白灼/水煮": "+0", "蒸": "+0", "烤/焗": "+0", "煎 (少油)": "+40", "炒": "+60", "炸": "+150", "燒烤": "+20", "微波": "+0" },
         categories: ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"],
         mealTime: { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "小食" },
-        tips: ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"]
+        tips: ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"],
+        tea: { title: "香港茶餐廳美食", desc: "常見茶餐廳食物同飲品既卡路里參考", dishes: "🥢 常見主食", drinks: "🧋 飲品" }
     },
     en: {
         title: "Calorie Helper",
@@ -299,7 +317,8 @@ const i18n = {
         cooking: { "Boiled/Steamed": "+0", "Steamed": "+0", "Baked": "+0", "Pan-fried (less oil)": "+40", "Stir-fried": "+60", "Deep-fried": "+150", "Grilled": "+20", "Microwave": "+0" },
         categories: ["All", "Meat", "Fish", "Seafood", "Vegetables", "Fruit", "Grains", "Eggs", "Beans", "Dairy", "Cheese"],
         mealTime: { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" },
-        tips: ["This meal plan is for reference only, everyone's body is different", "Combine with appropriate exercise", "Drink 2-3 liters of water daily", "Eat in order: vegetables -> protein -> carbs"]
+        tips: ["This meal plan is for reference only, everyone's body is different", "Combine with appropriate exercise", "Drink 2-3 liters of water daily", "Eat in order: vegetables -> protein -> carbs"],
+        tea: { title: "Hong Kong Tea Restaurant", desc: "Common tea restaurant dishes and drinks calorie reference", dishes: "🥢 Common Dishes", drinks: "🧋 Drinks" }
     }
 };
 
@@ -342,6 +361,48 @@ const foodDatabase = [
     { name: "脫脂牛奶", nameEn: "Skim Milk", price: 14.9, weight: "1L", source: "百佳", category: "奶類", categoryEn: "Dairy", calories: 34 },
     { name: "乳酪 (原味)", nameEn: "Yogurt (Plain)", price: 15.9, weight: "480g", source: "惠康", category: "奶類", categoryEn: "Dairy", calories: 59 },
     { name: "車打芝士", nameEn: "Cheddar Cheese", price: 22.9, weight: "200g", source: "惠康", category: "芝士", categoryEn: "Cheese", calories: 406 },
+];
+
+// Tea Restaurant Menu Data
+const teaDishes = [
+    { name: "叉蛋飯", nameEn: "Char Siu & Egg Rice", calories: 650, desc: "叉燒 + 煎蛋 + 白飯" },
+    { name: "叉燒飯", nameEn: "Char Siu Rice", calories: 550, desc: "叉燒 + 白飯" },
+    { name: "煎蛋飯", nameEn: "Egg Rice", calories: 480, desc: "煎蛋 + 白飯" },
+    { name: "腸蛋飯", nameEn: "Rice with Sausage & Egg", calories: 580, desc: "臘腸 + 煎蛋 + 白飯" },
+    { name: "火腿蛋飯", nameEn: "Ham & Egg Rice", calories: 520, desc: "火腿 + 煎蛋 + 白飯" },
+    { name: "肉片面", nameEn: "Beef Flat Noodles", calories: 480, desc: "牛肉 + 公仔麵" },
+    { name: "牛腩麵", nameEn: "Beef Brisket Noodles", calories: 580, desc: "牛腩 + 蛋麵" },
+    { name: "雲吞麵", nameEn: "Wonton Noodles", calories: 420, desc: "雲吞 + 蛋麵" },
+    { name: "魚蛋河", nameEn: "Fish Ball Rice Noodles", calories: 380, desc: "魚蛋 + 河粉" },
+    { name: "沙爹牛肉公仔麵", nameEn: "Satay Beef Instant Noodles", calories: 520, desc: "沙爹牛肉 + 公仔麵" },
+    { name: "炒公仔麵", nameEn: "Stir-fried Instant Noodles", calories: 480, desc: "炒公仔麵" },
+    { name: "乾炒牛河", nameEn: "Stir-fried Beef Hor Fan", calories: 620, desc: "牛肉 + 河粉" },
+    { name: "炒蛋多士", nameEn: "Egg Toast", calories: 280, desc: "邪蛋 +  Toast" },
+    { name: "蛋牛治", nameEn: "Egg & Beef Sandwich", calories: 350, desc: "雞蛋 + 牛肉 + 麵包" },
+    { name: "菠蘿包", nameEn: "Pineapple Bun", calories: 280, desc: "不含牛油" },
+    { name: "火腿蛋三文治", nameEn: "Ham & Egg Sandwich", calories: 320, desc: "火腿 + 雞蛋 + 麵包" },
+    { name: "西多士", nameEn: "French Toast", calories: 450, desc: "油炸麵包 + 糖漿" },
+    { name: "焗飯", nameEn: "Baked Rice", calories: 680, desc: "芝士焗飯" },
+    { name: "意式粉", nameEn: "Spaghetti", calories: 480, desc: "番茄意粉" },
+    { name: "咖喱飯", nameEn: "Curry Rice", calories: 580, desc: "咖喱 + 白飯" },
+];
+
+const teaDrinks = [
+    { name: "奶茶 (熱)", nameEn: "Milk Tea (Hot)", calories: 150, desc: "茶 + 淡奶" },
+    { name: "奶茶 (凍)", nameEn: "Milk Tea (Iced)", calories: 180, desc: "茶 + 淡奶 + 冰" },
+    { name: "檸茶 (熱)", nameEn: "Lemon Tea (Hot)", calories: 80, desc: "茶 + 檸檬" },
+    { name: "檸茶 (凍)", nameEn: "Lemon Tea (Iced)", calories: 100, desc: "茶 + 檸檬 + 糖 + 冰" },
+    { name: "鴛鴦", nameEn: "Yuen Yeung", calories: 180, desc: "咖啡 + 奶茶" },
+    { name: "檸啡", nameEn: "Lemon Coffee", calories: 120, desc: "咖啡 + 檸檬" },
+    { name: "茶走", nameEn: "Tea with Condensed Milk", calories: 200, desc: "茶 + 煉奶" },
+    { name: "啡走", nameEn: "Coffee with Condensed Milk", calories: 180, desc: "咖啡 + 煉奶" },
+    { name: "奶茶飛冰", nameEn: "Milk Tea Less Ice", calories: 150, desc: "少冰版本" },
+    { name: "檸檬可乐", nameEn: "Lemon Cola", calories: 140, desc: "可乐 + 檸檬" },
+    { name: "檸檬蘇打", nameEn: "Lemon Soda", calories: 100, desc: "蘇打水 + 檸檬" },
+    { name: "好立克", nameEn: "Horlicks", calories: 160, desc: "熱麥芽飲品" },
+    { name: "阿華田", nameEn: "Ovaltine", calories: 150, desc: "熱朱古力飲品" },
+    { name: "維他朱古力", nameEn: "Vita Chocolate", calories: 180, desc: "朱古力牛奶" },
+    { name: "旺仔牛奶", nameEn: "Wang Zai Milk", calories: 120, desc: "盒裝朱古力奶" },
 ];
 
 const cookingMethods = [
@@ -516,6 +577,32 @@ function renderCookingMethods() {
 function selectCooking(idx) {
     selectedCooking = cookingMethods[idx];
     renderCookingMethods();
+}
+
+function renderTeaRestaurant() {
+    // Render dishes
+    const dishesHtml = teaDishes.map(dish => `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center">
+            <div class="flex-1">
+                <div class="font-semibold text-lg">${currentLang === 'zh' ? dish.name : dish.nameEn}</div>
+                <div class="text-sm text-slate-500">${dish.desc}</div>
+            </div>
+            <div class="bg-orange-500 text-white px-3 py-1 rounded-full font-semibold">${dish.calories} cal</div>
+        </div>
+    `).join('');
+    document.getElementById('teaDishes').innerHTML = dishesHtml;
+    
+    // Render drinks
+    const drinksHtml = teaDrinks.map(drink => `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center">
+            <div class="flex-1">
+                <div class="font-semibold text-lg">${currentLang === 'zh' ? drink.name : drink.nameEn}</div>
+                <div class="text-sm text-slate-500">${drink.desc}</div>
+            </div>
+            <div class="bg-pink-500 text-white px-3 py-1 rounded-full font-semibold">${drink.calories} cal</div>
+        </div>
+    `).join('');
+    document.getElementById('teaDrinks').innerHTML = drinksHtml;
 }
 
 function renderSauces() {
@@ -743,6 +830,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderCookingMethods();
     renderSauces();
     populateFoodSelect();
+    renderTeaRestaurant();
     updateUI();
     console.log('Initialization complete');
 });
