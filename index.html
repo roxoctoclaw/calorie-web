@@ -242,6 +242,16 @@
                 
                 <h3 class="font-semibold text-primary-dark mb-3" data-i18n="tea.drinks">🧋 飲品</h3>
                 <div class="space-y-3" id="teaDrinks"></div>
+                
+                <div class="mt-6 bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-semibold" data-i18n="tea.selected">已選擇:</span>
+                        <span id="teaTotal"><span class="text-xl font-bold">0 cal</span></span>
+                    </div>
+                    <div id="teaSelectedList" class="border-t border-white/20 pt-3">
+                        <p class="text-slate-400 text-center py-4">未選擇任何項目</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -282,7 +292,7 @@ const i18n = {
         categories: ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"],
         mealTime: { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "小食" },
         tips: ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"],
-        tea: { title: "香港茶餐廳美食", desc: "常見茶餐廳食物同飲品既卡路里參考", dishes: "🥢 常見主食", drinks: "🧋 飲品" }
+        tea: { title: "香港茶餐廳美食", desc: "常見茶餐廳食物同飲品既卡路里參考", dishes: "🥢 常見主食", drinks: "🧋 飲品", selected: "已選擇:" }
     },
     en: {
         title: "Calorie Helper",
@@ -318,13 +328,13 @@ const i18n = {
         categories: ["All", "Meat", "Fish", "Seafood", "Vegetables", "Fruit", "Grains", "Eggs", "Beans", "Dairy", "Cheese"],
         mealTime: { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" },
         tips: ["This meal plan is for reference only, everyone's body is different", "Combine with appropriate exercise", "Drink 2-3 liters of water daily", "Eat in order: vegetables -> protein -> carbs"],
-        tea: { title: "Hong Kong Tea Restaurant", desc: "Common tea restaurant dishes and drinks calorie reference", dishes: "🥢 Common Dishes", drinks: "🧋 Drinks" }
+        tea: { title: "Hong Kong Tea Restaurant", desc: "Common tea restaurant dishes and drinks calorie reference", dishes: "🥢 Common Dishes", drinks: "🧋 Drinks", selected: "Selected:" }
     }
 };
 
 let currentLang = 'zh';
 let currentCategory = 'zh';
-let selectedCooking, selectedSauces = [], mealFoods = [], userStats = { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' };
+let selectedCooking, selectedSauces = [], mealFoods = [], userStats = { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' }, teaSelections = [];
 
 const foodDatabase = [
     { name: "雞胸肉 (美國無激素)", nameEn: "Chicken Breast (US Hormone-Free)", price: 33.9, weight: "450g", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 165 },
@@ -581,29 +591,78 @@ function selectCooking(idx) {
 }
 
 function renderTeaRestaurant() {
-    // Render dishes
-    const dishesHtml = teaDishes.map(dish => `
-        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center">
+    // Render dishes with selection
+    const dishesHtml = teaDishes.map((dish, idx) => {
+        const isSelected = teaSelections.some(s => s.name === dish.name && s.type === 'dish');
+        return `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'ring-2 ring-primary' : ''}" onclick="toggleTeaItem('dish', ${idx})">
             <div class="flex-1">
-                <div class="font-semibold text-lg">${currentLang === 'zh' ? dish.name : dish.nameEn}</div>
+                <div class="font-semibold text-lg ${isSelected ? 'text-primary' : ''}">${currentLang === 'zh' ? dish.name : dish.nameEn}</div>
                 <div class="text-sm text-slate-500">${currentLang === 'zh' ? dish.desc : (dish.descEn || dish.desc)}</div>
             </div>
             <div class="bg-orange-500 text-white px-3 py-1 rounded-full font-semibold">${dish.calories} cal</div>
         </div>
-    `).join('');
+    `}).join('');
     document.getElementById('teaDishes').innerHTML = dishesHtml;
     
-    // Render drinks
-    const drinksHtml = teaDrinks.map(drink => `
-        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center">
+    // Render drinks with selection
+    const drinksHtml = teaDrinks.map((drink, idx) => {
+        const isSelected = teaSelections.some(s => s.name === drink.name && s.type === 'drink');
+        return `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'ring-2 ring-primary' : ''}" onclick="toggleTeaItem('drink', ${idx})">
             <div class="flex-1">
-                <div class="font-semibold text-lg">${currentLang === 'zh' ? drink.name : drink.nameEn}</div>
+                <div class="font-semibold text-lg ${isSelected ? 'text-primary' : ''}">${currentLang === 'zh' ? drink.name : drink.nameEn}</div>
                 <div class="text-sm text-slate-500">${currentLang === 'zh' ? drink.desc : (drink.descEn || drink.desc)}</div>
             </div>
             <div class="bg-pink-500 text-white px-3 py-1 rounded-full font-semibold">${drink.calories} cal</div>
         </div>
-    `).join('');
+    `}).join('');
     document.getElementById('teaDrinks').innerHTML = drinksHtml;
+    
+    // Update total display
+    updateTeaTotal();
+}
+
+function toggleTeaItem(type, idx) {
+    const item = type === 'dish' ? teaDishes[idx] : teaDrinks[idx];
+    const existingIdx = teaSelections.findIndex(s => s.name === item.name && s.type === type);
+    
+    if (existingIdx >= 0) {
+        teaSelections.splice(existingIdx, 1);
+    } else {
+        teaSelections.push({ ...item, type: type });
+    }
+    
+    renderTeaRestaurant();
+}
+
+function updateTeaTotal() {
+    const total = teaSelections.reduce((sum, item) => sum + item.calories, 0);
+    const totalEl = document.getElementById('teaTotal');
+    const listEl = document.getElementById('teaSelectedList');
+    
+    if (totalEl) {
+        totalEl.innerHTML = `<span class="text-xl font-bold">${total} cal</span>`;
+    }
+    
+    if (listEl) {
+        if (teaSelections.length === 0) {
+            listEl.innerHTML = `<p class="text-slate-400 text-center py-4">${currentLang === 'zh' ? '未選擇任何項目' : 'No items selected'}</p>`;
+        } else {
+            listEl.innerHTML = teaSelections.map((item, idx) => `
+                <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-700 last:border-0">
+                    <div>
+                        <span class="font-medium">${currentLang === 'zh' ? item.name : item.nameEn}</span>
+                        <span class="text-sm text-slate-500 ml-2">(${item.type === 'dish' ? (currentLang === 'zh' ? '主食' : 'Dish') : (currentLang === 'zh' ? '飲品' : 'Drink')})</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold">${item.calories} cal</span>
+                        <button onclick="toggleTeaItem('${item.type}', ${teaSelections.findIndex(s => s.name === item.name && s.type === item.type)})" class="text-red-500 hover:text-red-700 text-xl">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
 }
 
 function renderSauces() {
