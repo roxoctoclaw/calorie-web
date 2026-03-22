@@ -543,7 +543,13 @@ function renderCategoryFilters() {
 function filterCategory(category) {
     currentCategory = category;
     renderCategoryFilters();
-    const filtered = category === (currentLang === 'zh' ? "全部" : "All") ? foodDatabase : foodDatabase.filter(f => f.category === category);
+    // Check if "All" is selected in either language (also handle old 'en'/'zh' values)
+    const isAll = category === "全部" || category === "All" || category === "en" || category === "zh";
+    const filtered = isAll ? foodDatabase : foodDatabase.filter(f => f.category === category);
+    // Clear search box when selecting All
+    if (isAll) {
+        document.getElementById('foodSearch').value = '';
+    }
     displayFoods(filtered);
 }
 
@@ -570,7 +576,8 @@ function displayFoods(foods) {
 
 function filterFoods() {
     const query = document.getElementById('foodSearch').value.toLowerCase();
-    const filtered = currentCategory === (currentLang === 'zh' ? "全部" : "All") 
+    const isAll = currentCategory === "全部" || currentCategory === "All" || currentCategory === "en" || currentCategory === "zh";
+    const filtered = isAll 
         ? foodDatabase.filter(f => getFoodName(f).toLowerCase().includes(query))
         : foodDatabase.filter(f => f.category === currentCategory && getFoodName(f).toLowerCase().includes(query));
     displayFoods(filtered);
