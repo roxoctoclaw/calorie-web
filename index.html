@@ -727,17 +727,22 @@ function generateMealPlan() {
     document.getElementById('generatedPlan').innerHTML = html;
 }
 
-// Init
-if (localStorage.getItem('darkMode') === 'true') {
-    document.documentElement.classList.add('dark');
-    document.getElementById('darkToggle').textContent = '☀️';
-}
-renderCategoryFilters();
-displayFoods(foodDatabase);
-renderCookingMethods();
-renderSauces();
-populateFoodSelect();
-updateUI();
+// Init - wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing...');
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+        var darkBtn = document.getElementById('darkToggle');
+        if (darkBtn) darkBtn.textContent = '☀️';
+    }
+    renderCategoryFilters();
+    displayFoods(foodDatabase);
+    renderCookingMethods();
+    renderSauces();
+    populateFoodSelect();
+    updateUI();
+    console.log('Initialization complete');
+});
 </script>
 </body>
 </html>
