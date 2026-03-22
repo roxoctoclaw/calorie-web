@@ -375,6 +375,10 @@ function t(key) {
     return val || key;
 }
 
+function getFoodName(food) {
+    return currentLang === 'zh' ? food.name : (food.nameEn || food.name);
+}
+
 function getWeightInGrams(weightStr) {
     if (!weightStr) return 100; // Default
     const num = parseFloat(weightStr);
