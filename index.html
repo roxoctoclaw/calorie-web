@@ -683,7 +683,7 @@ function generateMealPlan() {
         html += '</div>';
     });
     
-    html += `<div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4 flex justify-between items-center"><span>${currentLang === 'zh' ? '每日總計:' : 'Daily Total:'}</span><span class="text-xl font-bold">${targetCalories} cal | HK$${Math.round(totalPrice * 10)}</span></div>`;
+    html += `<div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4 flex justify-between items-center"><span>${currentLang === 'zh' ? '每日總計:' : 'Daily Total:'}</span><span class="text-xl font-bold">${targetCalories} cal | HK$${Math.round(totalPrice * 10) / 10}</span></div>`;
     
     const tipsList = currentLang === 'zh' 
         ? ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"]
