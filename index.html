@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡路里幫手 - 減肥餐單助手</title>
+    <style>
+        :root { --primary: #10b981; --primary-dark: #059669; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-light: #64748b; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 40px 20px; text-align: center; border-radius: 16px; margin-bottom: 30px; }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { padding: 12px 20px; background: var(--card); border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; font-size: 0.95rem; }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .tab:hover:not(.active) { border-color: var(--primary); }
+        .card { background: var(--card); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .search-box { width: 100%; padding: 14px 20px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; }
+        .search-box:focus { outline: none; border-color: var(--primary); }
+        .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 16px; background: #f1f5f9; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+        .filter-btn.active { background: var(--primary); color: white; }
+        .food-list { display: grid; gap: 12px; }
+        .food-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #f8fafc; border-radius: 8px; }
+        .food-info { flex: 1; }
+        .food-name { font-weight: 600; font-size: 1.1rem; }
+        .food-meta { color: var(--text-light); font-size: 0.85rem; margin-top: 4px; }
+        .food-price { color: var(--danger); font-weight: 600; }
+        .food-calories { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 600; margin-left: 12px; }
+        .supermarket-tag { display: inline-block; padding: 2px 8px; background: var(--info); color: white; border-radius: 4px; font-size: 0.7rem; margin-right: 6px; }
+        .section-title { font-size: 1.3rem; margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 8px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; }
+        .btn:hover { background: var(--primary-dark); }
+        .cooking-selector, .sauce-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin: 12px 0; }
+        .cooking-option, .sauce-option { padding: 10px; background: #f1f5f9; border: 2px solid transparent; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem; }
+        .cooking-option.selected { border-color: var(--primary); background: #d1fae5; }
+        .sauce-option.selected { border-color: var(--warning); background: #fef3c7; }
+        .cal-change, .cal { font-size: 0.75rem; color: var(--text-light); }
+        .added-items { background: #f0fdf4; border: 2px solid var(--primary); border-radius: 8px; padding: 16px; margin-top: 16px; }
+        .added-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+        .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem; }
+        .total-row { display: flex; justify-content: space-between; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 8px; margin-top: 16px; font-size: 1.1rem; }
+        .total-row .number { font-size: 1.8rem; font-weight: 700; }
+        .tips { background: #ecfdf5; border-left: 4px solid var(--primary); padding: 16px; border-radius: 0 8px 8px 0; margin-top: 20px; }
+        .tips h3 { color: var(--primary-dark); }
+        .tips ul { margin-left: 20px; }
+        .tips li { margin-bottom: 6px; }
+        .hidden { display: none; }
+        .meal { background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 12px; }
+        .meal-title { font-weight: 600; color: var(--primary-dark); margin-bottom: 10px; }
+        .meal-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+        @media (max-width: 600px) { header h1 { font-size: 1.8rem; } .food-item { flex-direction: column; gap: 10px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🥗 卡路里幫手</h1>
+        <p>惠康/百佳價錢 | 烹調卡路里計算 | 餐單助手</p>
+    </header>
+    <div class="tabs">
+        <div class="tab active" data-tab="search">🔍 食物搜尋</div>
+        <div class="tab" data-tab="calculator">🧮 卡路里計算機</div>
+        <div class="tab" data-tab="generator">✨ 自動生成餐單</div>
+    </div>
+
+    <!-- 食物搜尋 -->
+    <div id="search" class="tab-content">
+        <div class="card">
+            <input type="text" class="search-box" id="foodSearch" placeholder="搜尋食物... (例如: 雞胸、蘋果、豆腐)">
+            <div class="filter-row" id="categoryFilters"></div>
+            <div class="food-list" id="foodList"></div>
+        </div>
+    </div>
+
+    <!-- 卡路里計算機 -->
+    <div id="calculator" class="tab-content hidden">
+        <div class="card">
+            <h2 class="section-title">輸入你嘅食物同烹調方式</h2>
+            <div class="form-group">
+                <label>選擇食物</label>
+                <select id="calcFood"><option value="">-- 選擇食物 --</option></select>
+            </div>
+            <div class="form-group">
+                <label>份量 (克)</label>
+                <input type="number" id="calcWeight" value="100" min="10" max="1000">
+            </div>
+            <div class="form-group">
+                <label>烹調方式 (影響卡路里)</label>
+                <div class="cooking-selector" id="cookingMethods"></div>
+            </div>
+            <div class="form-group">
+                <label>醬汁/調味 (可多選)</label>
+                <div class="sauce-selector" id="sauceOptions"></div>
+            </div>
+            <button class="btn" onclick="addToMeal()">加入餐單</button>
+            <div class="added-items" id="mealItems">
+                <h4>📋 已選擇:</h4>
+                <div id="mealItemsList"></div>
+            </div>
+            <div class="total-row" id="mealTotal">
+                <span>總計:</span>
+                <span><span class="number">0</span> 卡 | HK$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自動生成餐單 -->
+    <div id="generator" class="tab-content hidden">
+        <div class="card">
+            <h2 class="section-title">AI 餐單生成器</h2>
+            <div class="form-group">
+                <label>每日卡路里目標</label>
+                <select id="generateCalorie">
+                    <option value="1200">1200 卡 (進取減肥)</option>
+                    <option value="1500" selected>1500 卡 (適中減肥)</option>
+                    <option value="1800">1800 卡 (温和減肥)</option>
+                    <option value="2000">2000 卡 (維持體重)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>偏好飲食</label>
+                <select id="dietPreference">
+                    <option value="balanced">均衡飲食</option>
+                    <option value="lowcarb">低碳水化合物</option>
+                    <option value="highprotein">高蛋白質</option>
+                    <option value="vegetarian">素食</option>
+                </select>
+            </div>
+            <button class="btn" onclick="generateMealPlan()">生成餐單 ✨</button>
+            <div id="generatedPlan"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 食物資料庫 - 香港超市真實價錢
+const foodDatabase = [
+    { name: "雞胸肉 (美國無激素)", price: 33.9, unit: "包", weight: "450g", source: "惠康", category: "肉類", calories: 165 },
+    { name: "雞脾肉 (巴西)", price: 39.0, unit: "包", weight: "1kg", source: "惠康", category: "肉類", calories: 209 },
+    { name: "雞翼 (巴西)", price: 39.0, unit: "包", weight: "800g", source: "惠康", category: "肉類", calories: 203 },
+    { name: "牛柳 (美國)", price: 89.0, unit: "包", weight: "300g", source: "百佳", category: "肉類", calories: 250 },
+    { name: "牛肉片 (美國)", price: 45.9, unit: "包", weight: "300g", source: "惠康", category: "肉類", calories: 250 },
+    { name: "豬扒 (本地)", price: 28.9, unit: "包", weight: "400g", source: "惠康", category: "肉類", calories: 231 },
+    { name: "豬肉片 (美國)", price: 35.0, unit: "包", weight: "350g", source: "百佳", category: "肉類", calories: 134 },
+    { name: "三文魚柳 (挪威)", price: 68.0, unit: "包", weight: "300g", source: "惠康", category: "魚類", calories: 208 },
+    { name: "吞拿魚柳 (日本)", price: 58.0, unit: "包", weight: "250g", source: "百佳", category: "魚類", calories: 144 },
+    { name: "蝦 (越南)", price: 45.0, unit: "包", weight: "400g", source: "惠康", category: "海鮮", calories: 99 },
+    { name: "青口 (紐西蘭)", price: 35.0, unit: "包", weight: "500g", source: "惠康", category: "海鮮", calories: 86 },
+    { name: "西蘭花", price: 12.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 34 },
+    { name: "菜心", price: 8.9, unit: "把", weight: "300g", source: "惠康", category: "蔬菜", calories: 20 },
+    { name: "菠菜", price: 9.9, unit: "包", weight: "250g", source: "惠康", category: "蔬菜", calories: 23 },
+    { name: "椰菜", price: 7.9, unit: "個", weight: "800g", source: "惠康", category: "蔬菜", calories: 27 },
+    { name: "番茄", price: 6.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 18 },
+    { name: "青瓜", price: 5.9, unit: "條", weight: "300g", source: "惠康", category: "蔬菜", calories: 15 },
+    { name: "胡蘿蔔", price: 7.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 41 },
+    { name: "粟米", price: 8.9, unit: "包", weight: "2條", source: "惠康", category: "蔬菜", calories: 86 },
+    { name: "薯仔", price: 9.9, unit: "袋", weight: "1kg", source: "惠康", category: "蔬菜", calories: 77 },
+    { name: "紅薯", price: 12.9, unit: "包", weight: "600g", source: "百佳", category: "蔬菜", calories: 90 },
+    { name: "蘋果 (紅)", price: 12.9, unit: "4個", weight: "600g", source: "惠康", category: "水果", calories: 52 },
+    { name: "香蕉", price: 6.9, unit: "排", weight: "600g", source: "惠康", category: "水果", calories: 89 },
+    { name: "橙", price: 10.9, unit: "4個", weight: "600g", source: "惠康", category: "水果", calories: 47 },
+    { name: "西瓜", price: 15.9, unit: "個", weight: "2kg", source: "惠康", category: "水果", calories: 30 },
+    { name: "士多啤梨", price: 25.9, unit: "盒", weight: "250g", source: "惠康", category: "水果", calories: 32 },
+    { name: "藍莓", price: 28.9, unit: "盒", weight: "125g", source: "惠康", category: "水果", calories: 57 },
+    { name: "獼猴桃", price: 15.9, unit: "4個", weight: "300g", source: "百佳", category: "水果", calories: 61 },
+    { name: "白米 (泰國)", price: 26.9, unit: "包", weight: "1kg", source: "惠康", category: "主食", calories: 130 },
+    { name: "糙米 (有機)", price: 32.0, unit: "包", weight: "1kg", source: "百佳", category: "主食", calories: 112 },
+    { name: "意粉 (杜林)", price: 15.9, unit: "包", weight: "500g", source: "惠康", category: "主食", calories: 131 },
+    { name: "公仔麵", price: 6.5, unit: "包", weight: "1個", source: "惠康", category: "主食", calories: 138 },
+    { name: "烏冬 (日清)", price: 12.9, unit: "包", weight: "360g", source: "惠康", category: "主食", calories: 99 },
+    { name: "雞蛋 (本地)", price: 15.9, unit: "盒", weight: "10隻", source: "惠康", category: "蛋類", calories: 143 },
+    { name: "雞蛋 (特大)", price: 19.9, unit: "盒", weight: "12隻", source: "百佳", category: "蛋類", calories: 143 },
+    { name: "豆腐 (硬)", price: 6.9, unit: "盒", weight: "400g", source: "惠康", category: "豆類", calories: 144 },
+    { name: "豆腐 (軟)", price: 6.9, unit: "盒", weight: "300g", source: "惠康", category: "豆類", calories: 76 },
+    { name: "豆漿", price: 9.9, unit: "包", weight: "1L", source: "惠康", category: "豆類", calories: 33 },
+    { name: "全脂牛奶", price: 12.9, unit: "盒", weight: "1L", source: "惠康", category: "奶類", calories: 61 },
+    { name: "脫脂牛奶", price: 14.9, unit: "盒", weight: "1L", source: "百佳", category: "奶類", calories: 34 },
+    { name: "乳酪 (原味)", price: 15.9, unit: "4杯", weight: "480g", source: "惠康", category: "奶類", calories: 59 },
+    { name: "車打芝士", price: 22.9, unit: "包", weight: "200g", source: "惠康", category: "芝士", calories: 406 },
+    { name: "水牛芝士", price: 25.0, unit: "包", weight: "125g", source: "百佳", category: "芝士", calories: 257 },
+];
+
+const cookingMethods = [
+    { name: "白灼/水煮", calChange: 0 },
+    { name: "蒸", calChange: 0 },
+    { name: "烤/焗", calChange: 0 },
+    { name: "煎 (少油)", calChange: 40 },
+    { name: "炒", calChange: 60 },
+    { name: "炸", calChange: 150 },
+    { name: "燒烤", calChange: 20 },
+    { name: "微波", calChange: 0 }
+];
+
+const sauces = [
+    { name: "生抽", cal: 3, unit: "1茶匙" },
+    { name: "老抽", cal: 5, unit: "1茶匙" },
+    { name: "蠔油", cal: 10, unit: "1茶匙" },
+    { name: "麻油", cal: 15, unit: "1茶匙" },
+    { name: "食用油", cal: 40, unit: "1茶匙" },
+    { name: "辣椒醬", cal: 5, unit: "1茶匙" },
+    { name: "沙律醬", cal: 35, unit: "1茶匙" },
+    { name: "茄汁", cal: 8, unit: "1茶匙" },
+    { name: "咖喱醬", cal: 15, unit: "1茶匙" },
+    { name: "椰漿", cal: 50, unit: "2湯匙" },
+    { name: "蜜糖", cal: 21, unit: "1茶匙" },
+    { name: "鹽", cal: 0, unit: "適量" }
+];
+
+const categories = ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"];
+let currentCategory = "全部";
+let selectedCooking = cookingMethods[0];
+let selectedSauces = [];
+let mealFoods = [];
+
+function init() {
+    renderCategoryFilters();
+    displayFoods(foodDatabase);
+    renderCookingMethods();
+    renderSauces();
+    populateFoodSelect();
+}
+
+function renderCategoryFilters() {
+    document.getElementById('categoryFilters').innerHTML = categories.map(cat => 
+        `<button class="filter-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`
+    ).join('');
+}
+
+function filterCategory(category) {
+    currentCategory = category;
+    renderCategoryFilters();
+    const filtered = category === "全部" ? foodDatabase : foodDatabase.filter(f => f.category === category);
+    displayFoods(filtered);
+}
+
+function displayFoods(foods) {
+    const query = document.getElementById('foodSearch').value.toLowerCase();
+    const filtered = foods.filter(food => food.name.toLowerCase().includes(query));
+    
+    if (filtered.length === 0) {
+        document.getElementById('foodList').innerHTML = '<p style="text-align:center;color:#64748b;">冇搵到...</p>';
+        return;
+    }
+    
+    document.getElementById('foodList').innerHTML = filtered.map(food => `
+        <div class="food-item">
+            <div class="food-info">
+                <div class="food-name"><span class="supermarket-tag">${food.source}</span>${food.name}</div>
+                <div class="food-meta">${food.weight} | ${food.category}</div>
+            </div>
+            <div style="display:flex;align-items:center;">
+                <div class="food-price">HK$${food.price}</div>
+                <div class="food-calories">${food.calories} 卡</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderCookingMethods() {
+    document.getElementById('cookingMethods').innerHTML = cookingMethods.map((method, idx) => `
+        <div class="cooking-option ${idx === 0 ? 'selected' : ''}" onclick="selectCooking(${idx})">
+            <div>${method.name}</div>
+            <div class="cal-change">${method.calChange > 0 ? '+' + method.calChange : method.calChange} 卡</div>
+        </div>
+    `).join('');
+}
+
+function selectCooking(idx) {
+    selectedCooking = cookingMethods[idx];
+    document.querySelectorAll('.cooking-option').forEach((el, i) => el.classList.toggle('selected', i === idx));
+}
+
+function renderSauces() {
+    document.getElementById('sauceOptions').innerHTML = sauces.map((sauce, idx) => `
+        <div class="sauce-option" onclick="toggleSauce(${idx})" id="sauce-${idx}">
+            <div>${sauce.name}</div>
+            <div class="cal">+${sauce.cal} 卡</div>
+        </div>
+    `).join('');
+}
+
+function toggleSauce(idx) {
+    const sauce = sauces[idx];
+    const el = document.getElementById(`sauce-${idx}`);
+    if (selectedSauces.includes(sauce)) {
+        selectedSauces = selectedSauces.filter(s => s !== sauce);
+        el.classList.remove('selected');
+    } else {
+        selectedSauces.push(sauce);
+        el.classList.add('selected');
+    }
+}
+
+function populateFoodSelect() {
+    const select = document.getElementById('calcFood');
+    select.innerHTML = '<option value="">-- 選擇食物 --</option>' + 
+        foodDatabase.map((f, i) => `<option value="${i}">${f.name} (HK$${f.price})</option>`).join('');
+}
+
+function addToMeal() {
+    const foodIdx = document.getElementById('calcFood').value;
+    const weight = parseInt(document.getElementById('calcWeight').value);
+    
+    if (foodIdx === "") { alert("請選擇食物"); return; }
+    
+    const food = foodDatabase[foodIdx];
+    const baseCalories = Math.round(food.calories * weight / 100);
+    const cookingCalories = selectedCooking.calChange;
+    const sauceCalories = selectedSauces.reduce((sum, s) => sum + s.cal, 0);
+    const totalCalories = baseCalories + cookingCalories + sauceCalories;
+    const price = Math.round(food.price * weight / parseInt(food.weight) * 10) / 10;
+    
+    mealFoods.push({ food, weight, cooking: selectedCooking.name, sauces: [...selectedSauces], totalCalories, price });
+    updateMealDisplay();
+}
+
+function updateMealDisplay() {
+    const list = document.getElementById('mealItemsList');
+    const total = document.getElementById('mealTotal');
+    
+    if (mealFoods.length === 0) {
+        list.innerHTML = '<p style="color:#64748b;">暫時未有選擇...</p>';
+        total.innerHTML = '<span>總計:</span><span><span class="number">0</span> 卡 | HK$0</span>';
+        return;
+    }
+    
+    let totalCal = 0, totalPrice = 0;
+    
+    list.innerHTML = mealFoods.map((item, idx) => {
+        totalCal += item.totalCalories;
+        totalPrice += item.price;
+        const sauceNames = item.sauces.length > 0 ? `<div style="font-size:0.8rem;color:#64748b;">+ ${item.sauces.map(s => s.name).join(', ')}</div>` : '';
+        return `
+            <div class="added-item">
+                <div>
+                    <strong>${item.food.name}</strong> ${item.weight}克<br>
+                    <span style="font-size:0.8rem;color:#64748b;">${item.cooking}</span>
+                    ${sauceNames}
+                </div>
+                <div style="text-align:right;">
+                    <div>${item.totalCalories} 卡</div>
+                    <div style="color:#64748b;font-size:0.85rem;">HK$${item.price.toFixed(1)}</div>
+                    <button class="remove-btn" onclick="removeMealItem(${idx})">✕</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    total.innerHTML = `<span>總計:</span><span><span class="number">${totalCal}</span> 卡 | HK$${totalPrice.toFixed(1)}</span>`;
+}
+
+function removeMealItem(idx) { mealFoods.splice(idx, 1); updateMealDisplay(); }
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(tab.dataset.tab).classList.remove('hidden');
+    });
+});
+
+document.getElementById('foodSearch').addEventListener('input', () => filterCategory(currentCategory));
+
+function generateMealPlan() {
+    const targetCalories = parseInt(document.getElementById('generateCalorie').value);
+    const preference = document.getElementById('dietPreference').value;
+    
+    const meals = [
+        { name: "早餐", calories: targetCalories * 0.25 },
+        { name: "午餐", calories: targetCalories * 0.35 },
+        { name: "晚餐", calories: targetCalories * 0.30 },
+        { name: "小食", calories: targetCalories * 0.10 }
+    ];
+    
+    let proteinFoods = preference === 'vegetarian' 
+        ? foodDatabase.filter(f => ['豆類', '蛋類', '奶類'].includes(f.category))
+        : foodDatabase.filter(f => ['肉類', '魚類', '豆類'].includes(f.category));
+    
+    const carbFoods = foodDatabase.filter(f => f.category === "主食");
+    const vegFoods = foodDatabase.filter(f => f.category === "蔬菜");
+    const fruitFoods = foodDatabase.filter(f => f.category === "水果");
+    
+    const getRandom = arr => arr[Math.floor(Math.random() * arr.length)];
+    
+    let html = '';
+    let totalPrice = 0;
+    
+    meals.forEach(meal => {
+        if (meal.calories < targetCalories * 0.08) return;
+        
+        const protein = getRandom(proteinFoods);
+        const carb = getRandom(carbFoods);
+        const veg = getRandom(vegFoods);
+        
+        const proteinAmt = Math.round(meal.calories * 0.4 / protein.calories * 100);
+        const carbAmt = Math.round(meal.calories * 0.35 / carb.calories * 100);
+        
+        // 估算價錢
+        const pPrice = protein.price * proteinAmt / parseInt(protein.weight);
+        const cPrice = carb.price * carbAmt / parseInt(carb.weight);
+        const vPrice = veg.price * 100 / parseInt(veg.weight);
+        totalPrice += pPrice + cPrice + vPrice;
+        
+        html += `
+            <div class="meal">
+                <div class="meal-title">${meal.name} (${Math.round(meal.calories)} 卡)</div>
+                <div class="meal-item"><span>${protein.name}</span><span>約 ${proteinAmt}克</span></div>
+                <div class="meal-item"><span>${carb.name}</span><span>約 ${carbAmt}克</span></div>
+                <div class="meal-item"><span>${veg.name}</span><span>1份</span></div>
+        `;
+        
+        if (meal.name !== "晚餐") {
+            const fruit = getRandom(fruitFoods);
+            html += `<div class="meal-item"><span>${fruit.name}</span><span>1份</span></div>`;
+            totalPrice += fruit.price * 0.5 / parseInt(fruit.weight);
+        }
+        
+        html += '</div>';
+    });
+    
+    html += `<div class="total-row"><span>每日總計:</span><span><span class="number">${targetCalories}</span> 卡 | HK$${Math.round(totalPrice * 10)}</span></div>`;
+    
+    html += `
+        <div class="tips">
+            <h3>📝 溫馨提示</h3>
+            <ul>
+                <li>呢個餐單只供參考</li>
+                <li>建議配合適量運動</li>
+                <li>每日飲 2-3 公升水</li>
+                <li>進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物</li>
+            </ul>
+        </div>
+    `;
+    
+    document.getElementById('generatedPlan').innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>
