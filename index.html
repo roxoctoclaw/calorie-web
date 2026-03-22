@@ -480,7 +480,11 @@ const i18n = {
 
 let currentLang = 'zh';
 let currentCategory = 'zh';
-let selectedCooking, selectedSauces = [], mealFoods = [], userStats = { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' }, teaSelections = [];
+let selectedCooking, selectedSauces = [], mealFoods = [], 
+    userStats = (function() {
+        const saved = localStorage.getItem('userStats');
+        return saved ? JSON.parse(saved) : { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' };
+    })(), teaSelections = [];
 
 const foodDatabase = [
     { name: "雞胸肉 (美國無激素)", nameEn: "Chicken Breast (US Hormone-Free)", price: 33.9, weight: "450g", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 165 },
@@ -938,6 +942,7 @@ function calculateStats() {
     else { target = tdee; goalName = currentLang === 'zh' ? "維持" : "Maintain"; }
     
     userStats = { bmr: Math.round(bmr), tdee, target: Math.max(target, 1200), bmi, goal: goalName };
+    localStorage.setItem('userStats', JSON.stringify(userStats));
     
     document.getElementById('bmiValue').textContent = bmi;
     document.getElementById('bmrValue').textContent = Math.round(bmr);
@@ -962,6 +967,14 @@ function calculateStats() {
 
 function generateMealPlan() {
     const targetCalories = userStats.target > 0 ? userStats.target : 1500;
+    
+    // Show warning if user hasn't set their profile
+    if (userStats.target === 0) {
+        const msg = currentLang === 'zh' 
+            ? "你仲未輸入個人資料！請先去「個人資料」輸入年齡、身高、體重，然後撳「計算 BMR 同 TDEE」。"
+            : "You haven't entered your profile yet! Please go to \"Profile\" tab, enter your age, height, weight, then click \"Calculate BMR & TDEE\".";
+        alert(msg);
+    }
     const preference = document.getElementById('dietPreference').value;
     
     const meals = [
