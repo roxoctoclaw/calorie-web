@@ -376,7 +376,9 @@ function t(key) {
 }
 
 function getWeightInGrams(weightStr) {
+    if (!weightStr) return 100; // Default
     const num = parseFloat(weightStr);
+    if (isNaN(num)) return 100; // Default if parse fails
     if (weightStr.includes('kg')) return num * 1000;
     if (weightStr.includes('g')) return num;
     return num * 100; // Default to 100g if no unit
@@ -384,14 +386,18 @@ function getWeightInGrams(weightStr) {
 
 // Calculate price per gram
 function getPricePerGram(price, weightStr) {
+    if (!price || !weightStr) return 0;
     const grams = getWeightInGrams(weightStr);
+    if (grams <= 0) return 0;
     return price / grams;
 }
 
 // Calculate price for needed amount (in grams)
 function calcPrice(price, weightStr, neededGrams) {
-    const pricePerGram = getPricePerGram(price, weightStr);
-    return pricePerGram * neededGrams;
+    if (!price || !weightStr || !neededGrams) return 0;
+    const perGram = getPricePerGram(price, weightStr);
+    if (isNaN(perGram) || !isFinite(perGram)) return 0;
+    return perGram * neededGrams;
 }
 
 function getCategoryName(cat) {
@@ -697,6 +703,11 @@ function generateMealPlan() {
         
         html += '</div>';
     });
+    
+    // Safety check: ensure totalPrice is valid
+    if (!totalPrice || !isFinite(totalPrice) || isNaN(totalPrice)) {
+        totalPrice = 0;
+    }
     
     html += `<div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4 flex justify-between items-center"><span>${currentLang === 'zh' ? '每日總計:' : 'Daily Total:'}</span><span class="text-xl font-bold">${targetCalories} cal | HK$${totalPrice.toFixed(1)}</span></div>`;
     
