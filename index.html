@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卡路里幫手 - 減肥餐單助手</title>
+    <title>卡路里幫手 - 個人化減肥餐單助手</title>
     <style>
         :root { --primary: #10b981; --primary-dark: #059669; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-light: #64748b; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,6 +17,7 @@
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
         .tab:hover:not(.active) { border-color: var(--primary); }
         .card { background: var(--card); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card-highlight { border-left: 4px solid var(--primary); }
         .search-box { width: 100%; padding: 14px 20px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; }
         .search-box:focus { outline: none; border-color: var(--primary); }
         .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -35,6 +36,7 @@
         .form-group label { display: block; margin-bottom: 6px; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #e2e8f0; border-radius: 8px; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
         .btn { background: var(--primary); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; }
         .btn:hover { background: var(--primary-dark); }
         .cooking-selector, .sauce-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin: 12px 0; }
@@ -55,23 +57,107 @@
         .meal { background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 12px; }
         .meal-title { font-weight: 600; color: var(--primary-dark); margin-bottom: 10px; }
         .meal-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem; }
+        .bmi-result { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; }
+        .bmi-result .bmi-value { font-size: 3rem; font-weight: 700; }
+        .bmi-result .bmi-category { font-size: 1.2rem; opacity: 0.9; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px; }
+        .stat-box { background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; }
+        .stat-box .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .stat-box .stat-label { font-size: 0.85rem; color: var(--text-light); }
+        .goal-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 12px 0; }
+        .goal-option { padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 8px; cursor: pointer; text-align: center; }
+        .goal-option.selected { border-color: var(--primary); background: #d1fae5; }
+        .goal-option .goal-name { font-weight: 600; margin-bottom: 4px; }
+        .goal-option .goal-cal { font-size: 0.9rem; color: var(--text-light); }
         @media (max-width: 600px) { header h1 { font-size: 1.8rem; } .food-item { flex-direction: column; gap: 10px; } }
     </style>
 </head>
 <body>
 <div class="container">
     <header>
-        <h1>🥗 卡路里幫手</h1>
-        <p>惠康/百佳價錢 | 烹調卡路里計算 | 餐單助手</p>
+        <h1>卡路里幫手</h1>
+        <p>個人化減肥餐單 | 惠康/百佳價錢 | 根據你既身體數據</p>
     </header>
     <div class="tabs">
-        <div class="tab active" data-tab="search">🔍 食物搜尋</div>
-        <div class="tab" data-tab="calculator">🧮 卡路里計算機</div>
-        <div class="tab" data-tab="generator">✨ 自動生成餐單</div>
+        <div class="tab active" data-tab="profile">個人資料</div>
+        <div class="tab" data-tab="search">食物搜尋</div>
+        <div class="tab" data-tab="calculator">卡路里計算機</div>
+        <div class="tab" data-tab="generator">自動生成餐單</div>
+    </div>
+
+    <!-- 個人資料 -->
+    <div id="profile" class="tab-content">
+        <div class="card card-highlight">
+            <h2 class="section-title">輸入你既個人資料</h2>
+            <p style="color: var(--text-light); margin-bottom: 20px;">我會根據你既年齡、身高、體重計算每日所需卡路里</p>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>年齡 (歲)</label>
+                    <input type="number" id="age" value="25" min="15" max="100">
+                </div>
+                <div class="form-group">
+                    <label>身高 (cm)</label>
+                    <input type="number" id="height" value="170" min="100" max="250">
+                </div>
+                <div class="form-group">
+                    <label>體重 (kg)</label>
+                    <input type="number" id="weight" value="70" min="30" max="300">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>性別</label>
+                    <select id="gender">
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>活動量</label>
+                    <select id="activity">
+                        <option value="1.2">很少運動 (坐為主)</option>
+                        <option value="1.375">輕微運動 (每週1-3日)</option>
+                        <option value="1.55">適中運動 (每週3-5日)</option>
+                        <option value="1.725">積極運動 (每週6-7日)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="calculateStats()">計算 BMR 同 TDEE</button>
+            
+            <div id="statsResult" class="hidden">
+                <div class="bmi-result">
+                    <div class="bmi-value" id="bmiValue">0</div>
+                    <div class="bmi-category" id="bmiCategory">正常</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="bmrValue">0</div>
+                        <div class="stat-label">基礎代謝率 (BMR)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="tdeeValue">0</div>
+                        <div class="stat-label">每日總消耗 (TDEE)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="targetValue">0</div>
+                        <div class="stat-label">減肥目標</div>
+                    </div>
+                </div>
+                
+                <div class="tips">
+                    <h3>個人化建議</h3>
+                    <ul id="personalTips"></ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- 食物搜尋 -->
-    <div id="search" class="tab-content">
+    <div id="search" class="tab-content hidden">
         <div class="card">
             <input type="text" class="search-box" id="foodSearch" placeholder="搜尋食物... (例如: 雞胸、蘋果、豆腐)">
             <div class="filter-row" id="categoryFilters"></div>
@@ -82,7 +168,7 @@
     <!-- 卡路里計算機 -->
     <div id="calculator" class="tab-content hidden">
         <div class="card">
-            <h2 class="section-title">輸入你嘅食物同烹調方式</h2>
+            <h2 class="section-title">輸入你既食物同烹調方式</h2>
             <div class="form-group">
                 <label>選擇食物</label>
                 <select id="calcFood"><option value="">-- 選擇食物 --</option></select>
@@ -101,7 +187,7 @@
             </div>
             <button class="btn" onclick="addToMeal()">加入餐單</button>
             <div class="added-items" id="mealItems">
-                <h4>📋 已選擇:</h4>
+                <h4>已選擇:</h4>
                 <div id="mealItemsList"></div>
             </div>
             <div class="total-row" id="mealTotal">
@@ -114,16 +200,26 @@
     <!-- 自動生成餐單 -->
     <div id="generator" class="tab-content hidden">
         <div class="card">
-            <h2 class="section-title">AI 餐單生成器</h2>
+            <h2 class="section-title">個人化餐單生成器</h2>
+            
             <div class="form-group">
-                <label>每日卡路里目標</label>
-                <select id="generateCalorie">
-                    <option value="1200">1200 卡 (進取減肥)</option>
-                    <option value="1500" selected>1500 卡 (適中減肥)</option>
-                    <option value="1800">1800 卡 (温和減肥)</option>
-                    <option value="2000">2000 卡 (維持體重)</option>
-                </select>
+                <label>你想:</label>
+                <div class="goal-selector" id="goalSelector">
+                    <div class="goal-option" data-goal="lose" onclick="selectGoal('lose')">
+                        <div class="goal-name">減肥</div>
+                        <div class="goal-cal">-500卡/日</div>
+                    </div>
+                    <div class="goal-option selected" data-goal="maintain" onclick="selectGoal('maintain')">
+                        <div class="goal-name">維持</div>
+                        <div class="goal-cal">保持而家體重</div>
+                    </div>
+                    <div class="goal-option" data-goal="gain" onclick="selectGoal('gain')">
+                        <div class="goal-name">增肌</div>
+                        <div class="goal-cal">+300卡/日</div>
+                    </div>
+                </div>
             </div>
+            
             <div class="form-group">
                 <label>偏好飲食</label>
                 <select id="dietPreference">
@@ -133,84 +229,63 @@
                     <option value="vegetarian">素食</option>
                 </select>
             </div>
-            <button class="btn" onclick="generateMealPlan()">生成餐單 ✨</button>
+            
+            <button class="btn" onclick="generateMealPlan()">生成個人化餐單</button>
             <div id="generatedPlan"></div>
         </div>
     </div>
 </div>
 
 <script>
-// 食物資料庫 - 香港超市真實價錢
+let userStats = { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' };
+
 const foodDatabase = [
-    { name: "雞胸肉 (美國無激素)", price: 33.9, unit: "包", weight: "450g", source: "惠康", category: "肉類", calories: 165 },
-    { name: "雞脾肉 (巴西)", price: 39.0, unit: "包", weight: "1kg", source: "惠康", category: "肉類", calories: 209 },
-    { name: "雞翼 (巴西)", price: 39.0, unit: "包", weight: "800g", source: "惠康", category: "肉類", calories: 203 },
-    { name: "牛柳 (美國)", price: 89.0, unit: "包", weight: "300g", source: "百佳", category: "肉類", calories: 250 },
-    { name: "牛肉片 (美國)", price: 45.9, unit: "包", weight: "300g", source: "惠康", category: "肉類", calories: 250 },
-    { name: "豬扒 (本地)", price: 28.9, unit: "包", weight: "400g", source: "惠康", category: "肉類", calories: 231 },
-    { name: "豬肉片 (美國)", price: 35.0, unit: "包", weight: "350g", source: "百佳", category: "肉類", calories: 134 },
-    { name: "三文魚柳 (挪威)", price: 68.0, unit: "包", weight: "300g", source: "惠康", category: "魚類", calories: 208 },
-    { name: "吞拿魚柳 (日本)", price: 58.0, unit: "包", weight: "250g", source: "百佳", category: "魚類", calories: 144 },
-    { name: "蝦 (越南)", price: 45.0, unit: "包", weight: "400g", source: "惠康", category: "海鮮", calories: 99 },
-    { name: "青口 (紐西蘭)", price: 35.0, unit: "包", weight: "500g", source: "惠康", category: "海鮮", calories: 86 },
-    { name: "西蘭花", price: 12.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 34 },
-    { name: "菜心", price: 8.9, unit: "把", weight: "300g", source: "惠康", category: "蔬菜", calories: 20 },
-    { name: "菠菜", price: 9.9, unit: "包", weight: "250g", source: "惠康", category: "蔬菜", calories: 23 },
-    { name: "椰菜", price: 7.9, unit: "個", weight: "800g", source: "惠康", category: "蔬菜", calories: 27 },
-    { name: "番茄", price: 6.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 18 },
-    { name: "青瓜", price: 5.9, unit: "條", weight: "300g", source: "惠康", category: "蔬菜", calories: 15 },
-    { name: "胡蘿蔔", price: 7.9, unit: "包", weight: "400g", source: "惠康", category: "蔬菜", calories: 41 },
-    { name: "粟米", price: 8.9, unit: "包", weight: "2條", source: "惠康", category: "蔬菜", calories: 86 },
-    { name: "薯仔", price: 9.9, unit: "袋", weight: "1kg", source: "惠康", category: "蔬菜", calories: 77 },
-    { name: "紅薯", price: 12.9, unit: "包", weight: "600g", source: "百佳", category: "蔬菜", calories: 90 },
-    { name: "蘋果 (紅)", price: 12.9, unit: "4個", weight: "600g", source: "惠康", category: "水果", calories: 52 },
-    { name: "香蕉", price: 6.9, unit: "排", weight: "600g", source: "惠康", category: "水果", calories: 89 },
-    { name: "橙", price: 10.9, unit: "4個", weight: "600g", source: "惠康", category: "水果", calories: 47 },
-    { name: "西瓜", price: 15.9, unit: "個", weight: "2kg", source: "惠康", category: "水果", calories: 30 },
-    { name: "士多啤梨", price: 25.9, unit: "盒", weight: "250g", source: "惠康", category: "水果", calories: 32 },
-    { name: "藍莓", price: 28.9, unit: "盒", weight: "125g", source: "惠康", category: "水果", calories: 57 },
-    { name: "獼猴桃", price: 15.9, unit: "4個", weight: "300g", source: "百佳", category: "水果", calories: 61 },
-    { name: "白米 (泰國)", price: 26.9, unit: "包", weight: "1kg", source: "惠康", category: "主食", calories: 130 },
-    { name: "糙米 (有機)", price: 32.0, unit: "包", weight: "1kg", source: "百佳", category: "主食", calories: 112 },
-    { name: "意粉 (杜林)", price: 15.9, unit: "包", weight: "500g", source: "惠康", category: "主食", calories: 131 },
-    { name: "公仔麵", price: 6.5, unit: "包", weight: "1個", source: "惠康", category: "主食", calories: 138 },
-    { name: "烏冬 (日清)", price: 12.9, unit: "包", weight: "360g", source: "惠康", category: "主食", calories: 99 },
-    { name: "雞蛋 (本地)", price: 15.9, unit: "盒", weight: "10隻", source: "惠康", category: "蛋類", calories: 143 },
-    { name: "雞蛋 (特大)", price: 19.9, unit: "盒", weight: "12隻", source: "百佳", category: "蛋類", calories: 143 },
-    { name: "豆腐 (硬)", price: 6.9, unit: "盒", weight: "400g", source: "惠康", category: "豆類", calories: 144 },
-    { name: "豆腐 (軟)", price: 6.9, unit: "盒", weight: "300g", source: "惠康", category: "豆類", calories: 76 },
-    { name: "豆漿", price: 9.9, unit: "包", weight: "1L", source: "惠康", category: "豆類", calories: 33 },
-    { name: "全脂牛奶", price: 12.9, unit: "盒", weight: "1L", source: "惠康", category: "奶類", calories: 61 },
-    { name: "脫脂牛奶", price: 14.9, unit: "盒", weight: "1L", source: "百佳", category: "奶類", calories: 34 },
-    { name: "乳酪 (原味)", price: 15.9, unit: "4杯", weight: "480g", source: "惠康", category: "奶類", calories: 59 },
-    { name: "車打芝士", price: 22.9, unit: "包", weight: "200g", source: "惠康", category: "芝士", calories: 406 },
-    { name: "水牛芝士", price: 25.0, unit: "包", weight: "125g", source: "百佳", category: "芝士", calories: 257 },
+    { name: "雞胸肉 (美國無激素)", price: 33.9, weight: "450g", source: "惠康", category: "肉類", calories: 165 },
+    { name: "雞脾肉 (巴西)", price: 39.0, weight: "1kg", source: "惠康", category: "肉類", calories: 209 },
+    { name: "牛柳 (美國)", price: 89.0, weight: "300g", source: "百佳", category: "肉類", calories: 250 },
+    { name: "牛肉片 (美國)", price: 45.9, weight: "300g", source: "惠康", category: "肉類", calories: 250 },
+    { name: "豬扒 (本地)", price: 28.9, weight: "400g", source: "惠康", category: "肉類", calories: 231 },
+    { name: "三文魚柳 (挪威)", price: 68.0, weight: "300g", source: "惠康", category: "魚類", calories: 208 },
+    { name: "蝦 (越南)", price: 45.0, weight: "400g", source: "惠康", category: "海鮮", calories: 99 },
+    { name: "西蘭花", price: 12.9, weight: "400g", source: "惠康", category: "蔬菜", calories: 34 },
+    { name: "菜心", price: 8.9, weight: "300g", source: "惠康", category: "蔬菜", calories: 20 },
+    { name: "菠菜", price: 9.9, weight: "250g", source: "惠康", category: "蔬菜", calories: 23 },
+    { name: "椰菜", price: 7.9, weight: "800g", source: "惠康", category: "蔬菜", calories: 27 },
+    { name: "番茄", price: 6.9, weight: "400g", source: "惠康", category: "蔬菜", calories: 18 },
+    { name: "青瓜", price: 5.9, weight: "300g", source: "惠康", category: "蔬菜", calories: 15 },
+    { name: "胡蘿蔔", price: 7.9, weight: "400g", source: "惠康", category: "蔬菜", calories: 41 },
+    { name: "粟米", price: 8.9, weight: "2條", source: "惠康", category: "蔬菜", calories: 86 },
+    { name: "薯仔", price: 9.9, weight: "1kg", source: "惠康", category: "蔬菜", calories: 77 },
+    { name: "蘋果 (紅)", price: 12.9, weight: "600g", source: "惠康", category: "水果", calories: 52 },
+    { name: "香蕉", price: 6.9, weight: "600g", source: "惠康", category: "水果", calories: 89 },
+    { name: "橙", price: 10.9, weight: "600g", source: "惠康", category: "水果", calories: 47 },
+    { name: "西瓜", price: 15.9, weight: "2kg", source: "惠康", category: "水果", calories: 30 },
+    { name: "士多啤梨", price: 25.9, weight: "250g", source: "惠康", category: "水果", calories: 32 },
+    { name: "白米 (泰國)", price: 26.9, weight: "1kg", source: "惠康", category: "主食", calories: 130 },
+    { name: "糙米 (有機)", price: 32.0, weight: "1kg", source: "百佳", category: "主食", calories: 112 },
+    { name: "意粉 (杜林)", price: 15.9, weight: "500g", source: "惠康", category: "主食", calories: 131 },
+    { name: "公仔麵", price: 6.5, weight: "1個", source: "惠康", category: "主食", calories: 138 },
+    { name: "烏冬 (日清)", price: 12.9, weight: "360g", source: "惠康", category: "主食", calories: 99 },
+    { name: "雞蛋 (本地)", price: 15.9, weight: "10隻", source: "惠康", category: "蛋類", calories: 143 },
+    { name: "豆腐 (硬)", price: 6.9, weight: "400g", source: "惠康", category: "豆類", calories: 144 },
+    { name: "豆腐 (軟)", price: 6.9, weight: "300g", source: "惠康", category: "豆類", calories: 76 },
+    { name: "豆漿", price: 9.9, weight: "1L", source: "惠康", category: "豆類", calories: 33 },
+    { name: "全脂牛奶", price: 12.9, weight: "1L", source: "惠康", category: "奶類", calories: 61 },
+    { name: "脫脂牛奶", price: 14.9, weight: "1L", source: "百佳", category: "奶類", calories: 34 },
+    { name: "乳酪 (原味)", price: 15.9, weight: "480g", source: "惠康", category: "奶類", calories: 59 },
+    { name: "車打芝士", price: 22.9, weight: "200g", source: "惠康", category: "芝士", calories: 406 },
 ];
 
 const cookingMethods = [
-    { name: "白灼/水煮", calChange: 0 },
-    { name: "蒸", calChange: 0 },
-    { name: "烤/焗", calChange: 0 },
-    { name: "煎 (少油)", calChange: 40 },
-    { name: "炒", calChange: 60 },
-    { name: "炸", calChange: 150 },
-    { name: "燒烤", calChange: 20 },
-    { name: "微波", calChange: 0 }
+    { name: "白灼/水煮", calChange: 0 }, { name: "蒸", calChange: 0 }, { name: "烤/焗", calChange: 0 },
+    { name: "煎 (少油)", calChange: 40 }, { name: "炒", calChange: 60 }, { name: "炸", calChange: 150 },
+    { name: "燒烤", calChange: 20 }, { name: "微波", calChange: 0 }
 ];
 
 const sauces = [
-    { name: "生抽", cal: 3, unit: "1茶匙" },
-    { name: "老抽", cal: 5, unit: "1茶匙" },
-    { name: "蠔油", cal: 10, unit: "1茶匙" },
-    { name: "麻油", cal: 15, unit: "1茶匙" },
-    { name: "食用油", cal: 40, unit: "1茶匙" },
-    { name: "辣椒醬", cal: 5, unit: "1茶匙" },
-    { name: "沙律醬", cal: 35, unit: "1茶匙" },
-    { name: "茄汁", cal: 8, unit: "1茶匙" },
-    { name: "咖喱醬", cal: 15, unit: "1茶匙" },
-    { name: "椰漿", cal: 50, unit: "2湯匙" },
-    { name: "蜜糖", cal: 21, unit: "1茶匙" },
-    { name: "鹽", cal: 0, unit: "適量" }
+    { name: "生抽", cal: 3 }, { name: "老抽", cal: 5 }, { name: "蠔油", cal: 10 },
+    { name: "麻油", cal: 15 }, { name: "食用油", cal: 40 }, { name: "辣椒醬", cal: 5 },
+    { name: "沙律醬", cal: 35 }, { name: "茄汁", cal: 8 }, { name: "咖喱醬", cal: 15 }, { name: "蜜糖", cal: 21 }
 ];
 
 const categories = ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"];
@@ -225,6 +300,63 @@ function init() {
     renderCookingMethods();
     renderSauces();
     populateFoodSelect();
+}
+
+function calculateStats() {
+    const age = parseInt(document.getElementById('age').value);
+    const height = parseInt(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const gender = document.getElementById('gender').value;
+    const activity = parseFloat(document.getElementById('activity').value);
+    
+    let bmr;
+    if (gender === 'male') {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+    } else {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+    }
+    
+    const tdee = Math.round(bmr * activity);
+    const heightM = height / 100;
+    const bmi = Math.round((weight / (heightM * heightM)) * 10) / 10;
+    
+    let target, goalName;
+    if (userStats.goal === 'lose') { target = tdee - 500; goalName = "減肥"; }
+    else if (userStats.goal === 'gain') { target = tdee + 300; goalName = "增肌"; }
+    else { target = tdee; goalName = "維持"; }
+    
+    userStats = { bmr: Math.round(bmr), tdee, target: Math.max(target, 1200), bmi, goal: goalName };
+    
+    document.getElementById('bmiValue').textContent = bmi;
+    document.getElementById('bmrValue').textContent = Math.round(bmr);
+    document.getElementById('tdeeValue').textContent = tdee;
+    document.getElementById('targetValue').textContent = userStats.target;
+    
+    let category;
+    if (bmi < 18.5) category = "體重過輕";
+    else if (bmi < 25) category = "正常範圍";
+    else if (bmi < 30) category = "輕度過重";
+    else category = "過重";
+    
+    document.getElementById('bmiCategory').textContent = category;
+    
+    const tips = document.getElementById('personalTips');
+    let tipsHtml = '';
+    if (userStats.goal === 'lose') tipsHtml = `<li>每日攝取 ${userStats.target} 卡路里，每週約減 0.5kg</li>`;
+    else if (userStats.goal === 'gain') tipsHtml = `<li>每日攝取 ${userStats.target} 卡路里，配合運動增肌</li>`;
+    else tipsHtml = `<li>每日攝取 ${userStats.target} 卡路里，保持現有體重</li>`;
+    tipsHtml += `<li>你既基礎代謝率 (BMR) 係 ${Math.round(bmr)} 卡路里</li>`;
+    tips.innerHTML = tipsHtml;
+    
+    document.getElementById('statsResult').classList.remove('hidden');
+}
+
+function selectGoal(goal) {
+    userStats.goal = goal;
+    document.querySelectorAll('.goal-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.goal === goal);
+    });
+    if (userStats.tdee > 0) calculateStats();
 }
 
 function renderCategoryFilters() {
@@ -243,12 +375,10 @@ function filterCategory(category) {
 function displayFoods(foods) {
     const query = document.getElementById('foodSearch').value.toLowerCase();
     const filtered = foods.filter(food => food.name.toLowerCase().includes(query));
-    
     if (filtered.length === 0) {
         document.getElementById('foodList').innerHTML = '<p style="text-align:center;color:#64748b;">冇搵到...</p>';
         return;
     }
-    
     document.getElementById('foodList').innerHTML = filtered.map(food => `
         <div class="food-item">
             <div class="food-info">
@@ -307,7 +437,6 @@ function populateFoodSelect() {
 function addToMeal() {
     const foodIdx = document.getElementById('calcFood').value;
     const weight = parseInt(document.getElementById('calcWeight').value);
-    
     if (foodIdx === "") { alert("請選擇食物"); return; }
     
     const food = foodDatabase[foodIdx];
@@ -332,7 +461,6 @@ function updateMealDisplay() {
     }
     
     let totalCal = 0, totalPrice = 0;
-    
     list.innerHTML = mealFoods.map((item, idx) => {
         totalCal += item.totalCalories;
         totalPrice += item.price;
@@ -347,7 +475,7 @@ function updateMealDisplay() {
                 <div style="text-align:right;">
                     <div>${item.totalCalories} 卡</div>
                     <div style="color:#64748b;font-size:0.85rem;">HK$${item.price.toFixed(1)}</div>
-                    <button class="remove-btn" onclick="removeMealItem(${idx})">✕</button>
+                    <button class="remove-btn" onclick="removeMealItem(${idx})">X</button>
                 </div>
             </div>
         `;
@@ -370,7 +498,7 @@ document.querySelectorAll('.tab').forEach(tab => {
 document.getElementById('foodSearch').addEventListener('input', () => filterCategory(currentCategory));
 
 function generateMealPlan() {
-    const targetCalories = parseInt(document.getElementById('generateCalorie').value);
+    const targetCalories = userStats.target > 0 ? userStats.target : parseInt(document.getElementById('generateCalorie')?.value || 1500);
     const preference = document.getElementById('dietPreference').value;
     
     const meals = [
@@ -391,7 +519,7 @@ function generateMealPlan() {
     const getRandom = arr => arr[Math.floor(Math.random() * arr.length)];
     
     let html = '';
-    let totalPrice = 0;
+    let totalPrice =0;
     
     meals.forEach(meal => {
         if (meal.calories < targetCalories * 0.08) return;
@@ -403,7 +531,6 @@ function generateMealPlan() {
         const proteinAmt = Math.round(meal.calories * 0.4 / protein.calories * 100);
         const carbAmt = Math.round(meal.calories * 0.35 / carb.calories * 100);
         
-        // 估算價錢
         const pPrice = protein.price * proteinAmt / parseInt(protein.weight);
         const cPrice = carb.price * carbAmt / parseInt(carb.weight);
         const vPrice = veg.price * 100 / parseInt(veg.weight);
@@ -430,9 +557,9 @@ function generateMealPlan() {
     
     html += `
         <div class="tips">
-            <h3>📝 溫馨提示</h3>
+            <h3>溫馨提示</h3>
             <ul>
-                <li>呢個餐單只供參考</li>
+                <li>呢個餐單只供參考，每個人身體狀況不同</li>
                 <li>建議配合適量運動</li>
                 <li>每日飲 2-3 公升水</li>
                 <li>進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物</li>
