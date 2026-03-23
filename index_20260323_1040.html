@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡路里幫手 - Calorie Helper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        'primary-dark': '#059669',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-active { background-color: #10b981; color: white; border-color: #10b981; }
+        .tab-inactive { background-color: white; border-color: #e2e8f0; }
+        .dark .tab-inactive { background-color: #1e293b; border-color: #334155; }
+        .tab-inactive:hover { border-color: #10b981; }
+        .food-card { background-color: #f8fafc; border-radius: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .dark .food-card { background-color: rgba(30, 41, 59, 0.5); }
+        .input-field, .select-field { width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.5rem; background-color: white; transition: border-color 0.2s; }
+        .dark .input-field, .dark .select-field { background-color: #1e293b; border-color: #334155; }
+        .input-field:focus, .select-field:focus { border-color: #10b981; outline: none; }
+        .btn-primary { background-color: #10b981; color: white; font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; width: 100%; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #059669; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-2xl p-8 mb-6 relative">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2" data-i18n="title">卡路里幫手</h1>
+                    <p class="opacity-90 text-lg" data-i18n="subtitle">個人化減肥餐單 | 惠康/百佳價錢 | 根據你既身體數據</p>
+                </div>
+                <div class="flex gap-2">
+                    <!-- Language Toggle -->
+                    <button onclick="toggleLang()" id="langToggle" class="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        EN
+                    </button>
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDark()" id="darkToggle" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors">
+                        🌙
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="flex gap-3 mb-5 flex-wrap" id="tabs">
+            <button class="tab-active px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="home" onclick="switchTab('home')">
+                <span data-i18n="tab.home">主頁</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="profile" onclick="switchTab('profile')">
+                <span data-i18n="tab.profile">個人資料</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="search" onclick="switchTab('search')">
+                <span data-i18n="tab.search">食物搜尋</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="calculator" onclick="switchTab('calculator')">
+                <span data-i18n="tab.calculator">卡路里計算機</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="generator" onclick="switchTab('generator')">
+                <span data-i18n="tab.generator">自動生成餐單</span>
+            </button>
+            <button class="tab-inactive px-5 py-3 rounded-lg font-semibold border-2 transition-all" data-tab="tearestaurant" onclick="switchTab('tearestaurant')">
+                <span data-i18n="tab.tearestaurant">茶餐廳</span>
+            </button>
+        </div>
+
+        <!-- Home/Landing Tab -->
+        <div id="home" class="tab-content">
+            <!-- Chinese Version -->
+            <div class="home-zh bg-white dark:bg-slate-900 rounded-3xl overflow-hidden" style="display: none;">
+                <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
+                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                        卡路里幫手
+                    </h1>
+                    <p class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+                        為香港人而設的個人化減肥方案
+                    </p>
+                    <div class="mt-12 flex justify-center gap-4">
+                        <button onclick="switchTab('profile')" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-all hover:scale-105">
+                            開始使用
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative py-16 px-8 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-white dark:to-slate-900">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop" alt="香港早餐" class="w-full h-96 object-cover">
+                            <div class="absolute bottom-6 left-6 flex gap-3">
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 143 卡</span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 61 卡</span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 207 卡</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-white dark:bg-slate-900">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">點解整呢個？</h2>
+                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
+                            幫助香港人唔使估下估計算卡路里，咁就可以喺茶餐廳、惠康、百佳放心食嘢減肥。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-slate-50 dark:bg-slate-800">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-16 text-center">卡路里幫手可以做啲咩？</h2>
+                        <div class="grid md:grid-cols-3 gap-12">
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">📊</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">基礎代謝率計算</h3>
+                                <p class="text-slate-600 dark:text-slate-300">根據你既年齡、身高、體重、性別同活動量，計算每日所需卡路里</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🍽️</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">餐單制定</h3>
+                                <p class="text-slate-600 dark:text-slate-300">自動生成個人化減肥餐單，根據你既目標同偏好</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🛒</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">超市價錢</h3>
+                                <p class="text-slate-600 dark:text-slate-300">顯示惠康、百佳既最新價錢，方便你既屋企煮埋一份</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-white dark:bg-slate-900">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">點樣用？</h2>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">1</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">輸入個人資料</h3>
+                                <p class="text-slate-600 dark:text-slate-300">輸入你既年齡、身高、體重，計算 BMR 同每日所需卡路里</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">2</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">搜尋本地食物</h3>
+                                <p class="text-slate-600 dark:text-slate-300">搜尋茶餐廳食物同超市食材，睇埋卡路里同價錢</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">3</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">獲取餐單</h3>
+                                <p class="text-slate-600 dark:text-slate-300">一click生成個人化減肥餐單，跟住食就得</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-8">了解更多</h2>
+                        <div class="flex justify-center gap-6 mb-12">
+                            <a href="https://github.com/roxoctoclaw/calorie-web" target="_blank" class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-medium hover:bg-slate-200 transition-all">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                GitHub
+                            </a>
+                        </div>
+                        <div class="text-sm text-slate-500">
+                            <p class="mb-2">資料來源:</p>
+                            <p>卡路里數據來自 USDA FoodData Central • 價錢來自惠康及百佳香港 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Version -->
+            <div class="home-en bg-white dark:bg-slate-900 rounded-3xl overflow-hidden" style="display: none;">
+                <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
+                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
+                        Calorie Helper
+                    </h1>
+                    <p class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+                        Personalised Weight Loss for Hong Kong
+                    </p>
+                    <div class="mt-12 flex justify-center gap-4">
+                        <button onclick="switchTab('profile')" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-all hover:scale-105">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative py-16 px-8 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-white dark:to-slate-900">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop" alt="Hong Kong Breakfast" class="w-full h-96 object-cover">
+                            <div class="absolute bottom-6 left-6 flex gap-3">
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 143 cal</span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 61 cal</span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 207 cal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-white">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">WHY WE BUILT THIS</h2>
+                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
+                            Empowering Hong Kong people to lose weight without guessing calories in local cha chaan teng & Wellcome/ParknShop food.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-slate-50 dark:bg-slate-800">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">WHAT IS CALORIE HELPER?</h2>
+                        <div class="grid md:grid-cols-3 gap-12">
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">📊</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">BMR Calculator</h3>
+                                <p class="text-slate-600 dark:text-slate-300">Calculate your daily calorie needs based on age, height, weight, gender and activity level</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🍽️</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Meal Planner</h3>
+                                <p class="text-slate-600 dark:text-slate-300">Auto-generate personalized diet plans based on your goals and preferences</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🛒</span></div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Supermarket Prices</h3>
+                                <p class="text-slate-600 dark:text-slate-300">Show latest prices from Wellcome & ParknShop for home cooking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-white dark:bg-slate-900">
+                    <div class="max-w-5xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">HOW TO USE</h2>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">1</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Enter Your Data</h3>
+                                <p class="text-slate-600 dark:text-slate-300">Input your age, height, weight to calculate BMR and daily calorie needs</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">2</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Search Local Foods</h3>
+                                <p class="text-slate-600 dark:text-slate-300">Search cha chaan teng food & supermarket ingredients with calories & prices</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">3</div>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Get Your Plan</h3>
+                                <p class="text-slate-600 dark:text-slate-300">One-click generates personalized diet plan, just follow and eat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-24 px-8 bg-slate-900 text-white">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-8">MORE INFORMATION</h2>
+                        <div class="flex justify-center gap-6 mb-12">
+                            <a href="https://github.com/roxoctoclaw/calorie-web" target="_blank" class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-medium hover:bg-slate-200 transition-all">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                                GitHub
+                            </a>
+                        </div>
+                        <div class="text-sm text-slate-500">
+                            <p class="mb-2">Data Sources:</p>
+                            <p>Calorie data from USDA FoodData Central • Prices from Wellcome & ParknShop Hong Kong 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border-l-4 border-primary mb-5">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="profile.title">輸入你既個人資料</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-5" data-i18n="profile.desc">我會根據你既年齡、身高、體重計算每日所需卡路里</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="profile.age">年齡 (歲)</label>
+                        <input type="number" id="age" value="25" min="15" max="100" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="profile.height">身高 (cm)</label>
+                        <input type="number" id="height" value="170" min="100" max="250" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="profile.weight">體重 (kg)</label>
+                        <input type="number" id="weight" value="70" min="30" max="300" class="input-field">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="profile.gender">性別</label>
+                        <select id="gender" class="select-field">
+                            <option value="male" data-i18n="profile.male">男性</option>
+                            <option value="female" data-i18n="profile.female">女性</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-medium mb-2" data-i18n="profile.activity">活動量</label>
+                        <select id="activity" class="select-field">
+                            <option value="1.2" data-i18n="profile.sedentary">很少運動 (坐為主)</option>
+                            <option value="1.375" data-i18n="profile.light">輕微運動 (每週1-3日)</option>
+                            <option value="1.55" data-i18n="profile.moderate">適中運動 (每週3-5日)</option>
+                            <option value="1.725" data-i18n="profile.active">積極運動 (每週6-7日)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn-primary" onclick="calculateStats()" data-i18n="profile.calcBtn">計算 BMR 同 TDEE</button>
+                
+                <div id="statsResult" class="hidden mt-6">
+                    <div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-xl p-5 text-center mb-5">
+                        <div class="text-4xl font-bold" id="bmiValue">0</div>
+                        <div class="text-lg opacity-90" id="bmiCategory">正常</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-5">
+                        <div class="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-primary" id="bmrValue">0</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400" data-i18n="profile.bmr">基礎代謝率 (BMR)</div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-primary" id="tdeeValue">0</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400" data-i18n="profile.tdee">每日總消耗 (TDEE)</div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-primary" id="targetValue">0</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400" data-i18n="profile.target">減肥目標</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-primary p-4 rounded-r-lg">
+                        <h3 class="font-semibold text-primary-dark mb-2" data-i18n="profile.tipsTitle">個人化建議</h3>
+                        <ul id="personalTips" class="list-disc list-inside text-sm space-y-1"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="search" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+                <input type="text" id="foodSearch" placeholder="搜尋食物... (例如: 雞胸、蘋果、豆腐)"
+                       class="input-field mb-4" data-i18n-placeholder="search.placeholder" oninput="filterFoods()">
+                <div class="flex gap-2 flex-wrap mb-4" id="categoryFilters"></div>
+                <div class="space-y-3" id="foodList"></div>
+            </div>
+        </div>
+
+        <!-- Calculator Tab -->
+        <div id="calculator" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="calc.title">輸入你既食物同烹調方式</h2>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="calc.food">選擇食物</label>
+                    <select id="calcFood" class="select-field"></select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="calc.weight">份量 (克)</label>
+                    <input type="number" id="calcWeight" value="100" min="10" max="1000" class="input-field">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="calc.cooking">烹調方式 (影響卡路里)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="cookingMethods"></div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="calc.sauce">醬汁/調味 (可多選)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2" id="sauceOptions"></div>
+                </div>
+                
+                <button class="btn-primary mb-4" onclick="addToMeal()" data-i18n="calc.addBtn">加入餐單</button>
+                
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-primary rounded-lg p-4 mt-4" id="mealItems">
+                    <h4 class="font-semibold mb-2" data-i18n="calc.selected">已選擇:</h4>
+                    <div id="mealItemsList"></div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4 mt-4 flex justify-between items-center">
+                    <span class="font-semibold" data-i18n="calc.total">總計:</span>
+                    <span class="text-xl font-bold"><span id="totalCal">0</span> 卡 | HK$<span id="totalPrice">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generator Tab -->
+        <div id="generator" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="gen.title">個人化餐單生成器</h2>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="gen.goal">你想:</label>
+                    <div class="grid grid-cols-3 gap-3" id="goalSelector">
+                        <div class="border-2 border-slate-200 dark:border-slate-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary transition-colors" data-goal="lose" onclick="selectGoal('lose')">
+                            <div class="font-semibold" data-i18n="gen.lose">減肥</div>
+                            <div class="text-sm text-slate-500" data-i18n="gen.loseCal">-500卡/日</div>
+                        </div>
+                        <div class="border-2 border-primary bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 text-center cursor-pointer" data-goal="maintain" onclick="selectGoal('maintain')">
+                            <div class="font-semibold" data-i18n="gen.maintain">維持</div>
+                            <div class="text-sm text-slate-500" data-i18n="gen.maintainCal">保持而家體重</div>
+                        </div>
+                        <div class="border-2 border-slate-200 dark:border-slate-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary transition-colors" data-goal="gain" onclick="selectGoal('gain')">
+                            <div class="font-semibold" data-i18n="gen.gain">增肌</div>
+                            <div class="text-sm text-slate-500" data-i18n="gen.gainCal">+300卡/日</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block font-medium mb-2" data-i18n="gen.diet">偏好飲食</label>
+                    <select id="dietPreference" class="select-field">
+                        <option value="balanced" data-i18n="gen.balanced">均衡飲食</option>
+                        <option value="lowcarb" data-i18n="gen.lowcarb">低碳水化合物</option>
+                        <option value="highprotein" data-i18n="gen.highprotein">高蛋白質</option>
+                        <option value="vegetarian" data-i18n="gen.vegetarian">素食</option>
+                    </select>
+                </div>
+                
+                <button class="btn-primary" onclick="generateMealPlan()" data-i18n="gen.generateBtn">生成個人化餐單</button>
+                <div id="generatedPlan" class="mt-5"></div>
+            </div>
+        </div>
+
+        <!-- Tea Restaurant Tab -->
+        <div id="tearestaurant" class="tab-content hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+                <h2 class="text-xl font-semibold mb-4" data-i18n="tea.title">香港茶餐廳美食</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-4" data-i18n="tea.desc">常見茶餐廳食物同飲品既卡路里參考</p>
+                
+                <h3 class="font-semibold text-primary-dark mb-3" data-i18n="tea.dishes">🥢 常見主食</h3>
+                <div class="space-y-3 mb-6" id="teaDishes"></div>
+                
+                <h3 class="font-semibold text-primary-dark mb-3" data-i18n="tea.drinks">🧋 飲品</h3>
+                <div class="space-y-3" id="teaDrinks"></div>
+                
+                <div class="mt-6 bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-semibold" data-i18n="tea.selected">已選擇:</span>
+                        <span id="teaTotal"><span class="text-xl font-bold">0 cal</span></span>
+                    </div>
+                    <div id="teaSelectedList" class="border-t border-white/20 pt-3">
+                        <p class="text-slate-400 text-center py-4">未選擇任何項目</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const i18n = {
+    zh: {
+        title: "卡路里幫手",
+        subtitle: "個人化減肥餐單 | 惠康/百佳價錢 | 根據你既身體數據",
+        tab: { profile: "個人資料", search: "食物搜尋", calculator: "卡路里計算機", generator: "自動生成餐單", tearestaurant: "茶餐廳", home: "主頁" },
+        profile: {
+            title: "輸入你既個人資料",
+            desc: "我會根據你既年齡、身高、體重計算每日所需卡路里",
+            age: "年齡 (歲)", height: "身高 (cm)", weight: "體重 (kg)",
+            gender: "性別", male: "男性", female: "女性",
+            activity: "活動量", sedentary: "很少運動 (坐為主)", light: "輕微運動 (每週1-3日)",
+            moderate: "適中運動 (每週3-5日)", active: "積極運動 (每週6-7日)",
+            calcBtn: "計算 BMR 同 TDEE",
+            bmr: "基礎代謝率 (BMR)", tdee: "每日總消耗 (TDEE)", target: "減肥目標",
+            tipsTitle: "個人化建議"
+        },
+        search: { placeholder: "搜尋食物... (例如: 雞胸、蘋果、豆腐)" },
+        calc: {
+            title: "輸入你既食物同烹調方式",
+            food: "選擇食物", weight: "份量 (克)", cooking: "烹調方式 (影響卡路里)",
+            sauce: "醬汁/調味 (可多選)", addBtn: "加入餐單", selected: "已選擇:", total: "總計:"
+        },
+        gen: {
+            title: "個人化餐單生成器", goal: "你想:",
+            lose: "減肥", loseCal: "-500卡/日", maintain: "維持", maintainCal: "保持而家體重",
+            gain: "增肌", gainCal: "+300卡/日",
+            diet: "偏好飲食", balanced: "均衡飲食", lowcarb: "低碳水化合物",
+            highprotein: "高蛋白質", vegetarian: "素食",
+            generateBtn: "生成個人化餐單"
+        },
+        notFound: "冇搵到...",
+        cooking: { "白灼/水煮": "+0", "蒸": "+0", "烤/焗": "+0", "煎 (少油)": "+40", "炒": "+60", "炸": "+150", "燒烤": "+20", "微波": "+0" },
+        categories: ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"],
+        mealTime: { breakfast: "早餐", lunch: "午餐", dinner: "晚餐", snack: "小食" },
+        tips: ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"],
+        tea: { title: "香港茶餐廳美食", desc: "常見茶餐廳食物同飲品既卡路里參考", dishes: "🥢 常見主食", drinks: "🧋 飲品", selected: "已選擇:" }
+    },
+    en: {
+        title: "Calorie Helper",
+        subtitle: "Personalized Diet Plan | HK Supermarket Prices | Based on Your Body Data",
+        tab: { profile: "Profile", search: "Food Search", calculator: "Calculator", generator: "Meal Plan", tearestaurant: "Cha Chaan Teng", home: "Home" },
+        profile: {
+            title: "Enter Your Personal Data",
+            desc: "I'll calculate your daily calorie needs based on age, height, weight",
+            age: "Age (years)", height: "Height (cm)", weight: "Weight (kg)",
+            gender: "Gender", male: "Male", female: "Female",
+            activity: "Activity Level", sedentary: "Sedentary (little exercise)", light: "Light (1-3 days/week)",
+            moderate: "Moderate (3-5 days/week)", active: "Active (6-7 days/week)",
+            calcBtn: "Calculate BMR & TDEE",
+            bmr: "BMR", tdee: "TDEE", target: "Goal",
+            tipsTitle: "Personalized Suggestions"
+        },
+        search: { placeholder: "Search food... (e.g., chicken breast, apple, tofu)" },
+        calc: {
+            title: "Enter Your Food & Cooking Method",
+            food: "Select Food", weight: "Portion (g)", cooking: "Cooking Method (affects calories)",
+            sauce: "Sauce/Condiments (multi-select)", addBtn: "Add to Meal", selected: "Selected:", total: "Total:"
+        },
+        gen: {
+            title: "Personalized Meal Plan Generator", goal: "Your Goal:",
+            lose: "Lose Weight", loseCal: "-500 cal/day", maintain: "Maintain", maintainCal: "Maintain current weight",
+            gain: "Build Muscle", gainCal: "+300 cal/day",
+            diet: "Diet Preference", balanced: "Balanced", lowcarb: "Low Carb",
+            highprotein: "High Protein", vegetarian: "Vegetarian",
+            generateBtn: "Generate Meal Plan"
+        },
+        notFound: "No results found...",
+        cooking: { "Boiled/Steamed": "+0", "Steamed": "+0", "Baked": "+0", "Pan-fried (less oil)": "+40", "Stir-fried": "+60", "Deep-fried": "+150", "Grilled": "+20", "Microwave": "+0" },
+        categories: ["All", "Meat", "Fish", "Seafood", "Vegetables", "Fruit", "Grains", "Eggs", "Beans", "Dairy", "Cheese"],
+        mealTime: { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" },
+        tips: ["This meal plan is for reference only, everyone's body is different", "Combine with appropriate exercise", "Drink 2-3 liters of water daily", "Eat in order: vegetables -> protein -> carbs"],
+        tea: { title: "Cha Chaan Teng", desc: "Calorie reference for common Hong Kong-style cafe dishes & drinks", dishes: "🥢 Common Dishes", drinks: "🧋 Drinks", selected: "Selected:" }
+    }
+};
+
+let currentLang = 'zh';
+let currentCategory = 'zh';
+let selectedCooking, selectedSauces = [], mealFoods = [], 
+    userStats = (function() {
+        const saved = localStorage.getItem('userStats');
+        return saved ? JSON.parse(saved) : { bmr: 0, tdee: 0, target: 0, bmi: 0, goal: 'maintain' };
+    })(), teaSelections = [];
+
+const foodDatabase = [
+    { name: "雞胸肉 (美國無激素)", nameEn: "Chicken Breast (US Hormone-Free)", price: 33.9, weight: "450g", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 165 },
+    { name: "雞脾肉 (巴西)", nameEn: "Chicken Thigh (Brazil)", price: 39.0, weight: "1kg", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 209 },
+    { name: "牛柳 (美國)", nameEn: "Beef Tenderloin (US)", price: 89.0, weight: "300g", source: "百佳", category: "肉類", categoryEn: "Meat", calories: 250 },
+    { name: "牛肉片 (美國)", nameEn: "Beef Slices (US)", price: 45.9, weight: "300g", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 250 },
+    { name: "豬扒 (本地)", nameEn: "Pork Chop (Local)", price: 28.9, weight: "400g", source: "惠康", category: "肉類", categoryEn: "Meat", calories: 231 },
+    { name: "三文魚柳 (挪威)", nameEn: "Salmon Fillet (Norway)", price: 68.0, weight: "300g", source: "惠康", category: "魚類", categoryEn: "Fish", calories: 208 },
+    { name: "蝦 (越南)", nameEn: "Shrimp (Vietnam)", price: 45.0, weight: "400g", source: "惠康", category: "海鮮", categoryEn: "Seafood", calories: 99 },
+    { name: "西蘭花", nameEn: "Broccoli", price: 12.9, weight: "400g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 34 },
+    { name: "菜心", nameEn: "Chinese Broccoli", price: 8.9, weight: "300g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 20 },
+    { name: "菠菜", nameEn: "Spinach", price: 9.9, weight: "250g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 23 },
+    { name: "椰菜", nameEn: "Cabbage", price: 7.9, weight: "800g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 27 },
+    { name: "番茄", nameEn: "Tomato", price: 6.9, weight: "400g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 18 },
+    { name: "青瓜", nameEn: "Cucumber", price: 5.9, weight: "300g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 15 },
+    { name: "胡蘿蔔", nameEn: "Carrot", price: 7.9, weight: "400g", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 41 },
+    { name: "粟米", nameEn: "Corn", price: 8.9, weight: "2條", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 86 },
+    { name: "薯仔", nameEn: "Potato", price: 9.9, weight: "1kg", source: "惠康", category: "蔬菜", categoryEn: "Vegetables", calories: 77 },
+    { name: "蘋果 (紅)", nameEn: "Apple (Red)", price: 12.9, weight: "600g", source: "惠康", category: "水果", categoryEn: "Fruit", calories: 52 },
+    { name: "香蕉", nameEn: "Banana", price: 6.9, weight: "600g", source: "惠康", category: "水果", categoryEn: "Fruit", calories: 89 },
+    { name: "橙", nameEn: "Orange", price: 10.9, weight: "600g", source: "惠康", category: "水果", categoryEn: "Fruit", calories: 47 },
+    { name: "西瓜", nameEn: "Watermelon", price: 15.9, weight: "2kg", source: "惠康", category: "水果", categoryEn: "Fruit", calories: 30 },
+    { name: "士多啤梨", nameEn: "Strawberry", price: 25.9, weight: "250g", source: "惠康", category: "水果", categoryEn: "Fruit", calories: 32 },
+    { name: "白米 (泰國)", nameEn: "White Rice (Thailand)", price: 26.9, weight: "1kg", source: "惠康", category: "主食", categoryEn: "Grains", calories: 130 },
+    { name: "糙米 (有機)", nameEn: "Brown Rice (Organic)", price: 32.0, weight: "1kg", source: "百佳", category: "主食", categoryEn: "Grains", calories: 112 },
+    { name: "意粉 (杜林)", nameEn: "Pasta (Durum)", price: 15.9, weight: "500g", source: "惠康", category: "主食", categoryEn: "Grains", calories: 131 },
+    { name: "公仔麵", nameEn: "Instant Noodles", price: 6.5, weight: "1個", source: "惠康", category: "主食", categoryEn: "Grains", calories: 138 },
+    { name: "烏冬 (日清)", nameEn: "Udon (Nissin)", price: 12.9, weight: "360g", source: "惠康", category: "主食", categoryEn: "Grains", calories: 99 },
+    { name: "雞蛋 (本地)", nameEn: "Eggs (Local)", price: 15.9, weight: "10隻", source: "惠康", category: "蛋類", categoryEn: "Eggs", calories: 143 },
+    { name: "豆腐 (硬)", nameEn: "Tofu (Hard)", price: 6.9, weight: "400g", source: "惠康", category: "豆類", categoryEn: "Beans", calories: 144 },
+    { name: "豆腐 (軟)", nameEn: "Tofu (Soft)", price: 6.9, weight: "300g", source: "惠康", category: "豆類", categoryEn: "Beans", calories: 76 },
+    { name: "豆漿", nameEn: "Soy Milk", price: 9.9, weight: "1L", source: "惠康", category: "豆類", categoryEn: "Beans", calories: 33 },
+    { name: "全脂牛奶", nameEn: "Whole Milk", price: 12.9, weight: "1L", source: "惠康", category: "奶類", categoryEn: "Dairy", calories: 61 },
+    { name: "脫脂牛奶", nameEn: "Skim Milk", price: 14.9, weight: "1L", source: "百佳", category: "奶類", categoryEn: "Dairy", calories: 34 },
+    { name: "乳酪 (原味)", nameEn: "Yogurt (Plain)", price: 15.9, weight: "480g", source: "惠康", category: "奶類", categoryEn: "Dairy", calories: 59 },
+    { name: "車打芝士", nameEn: "Cheddar Cheese", price: 22.9, weight: "200g", source: "惠康", category: "芝士", categoryEn: "Cheese", calories: 406 },
+];
+
+// Tea Restaurant Menu Data
+const teaDishes = [
+    { name: "叉蛋飯", nameEn: "Char Siu & Egg Rice", calories: 650, desc: "叉燒 + 煎蛋 + 白飯", descEn: "Char siu + fried egg + rice" },
+    { name: "叉燒飯", nameEn: "Char Siu Rice", calories: 550, desc: "叉燒 + 白飯", descEn: "Char siu + rice" },
+    { name: "煎蛋飯", nameEn: "Egg Rice", calories: 480, desc: "煎蛋 + 白飯", descEn: "Fried egg + rice" },
+    { name: "腸蛋飯", nameEn: "Rice with Sausage & Egg", calories: 580, desc: "臘腸 + 煎蛋 + 白飯", descEn: "Lun cheung + fried egg + rice" },
+    { name: "火腿蛋飯", nameEn: "Ham & Egg Rice", calories: 520, desc: "火腿 + 煎蛋 + 白飯", descEn: "Ham + fried egg + rice" },
+    { name: "肉片面", nameEn: "Beef Flat Noodles", calories: 480, desc: "牛肉 + 公仔麵", descEn: "Beef + flat noodles" },
+    { name: "牛腩麵", nameEn: "Beef Brisket Noodles", calories: 580, desc: "牛腩 + 蛋麵", descEn: "Beef brisket + egg noodles" },
+    { name: "雲吞麵", nameEn: "Wonton Noodles", calories: 420, desc: "雲吞 + 蛋麵", descEn: "Wonton + egg noodles" },
+    { name: "魚蛋河", nameEn: "Fish Ball Rice Noodles", calories: 380, desc: "魚蛋 + 河粉", descEn: "Fish balls + ho fun" },
+    { name: "沙爹牛肉公仔麵", nameEn: "Satay Beef Instant Noodles", calories: 520, desc: "沙爹牛肉 + 公仔麵", descEn: "Satay beef + instant noodles" },
+    { name: "炒公仔麵", nameEn: "Stir-fried Instant Noodles", calories: 480, desc: "炒公仔麵", descEn: "Stir-fried instant noodles" },
+    { name: "乾炒牛河", nameEn: "Stir-fried Beef Hor Fan", calories: 620, desc: "牛肉 + 河粉", descEn: "Beef + stir-fried hor fun" },
+    { name: "炒蛋多士", nameEn: "Egg Toast", calories: 280, desc: "邪蛋 + Toast", descEn: "Fried egg + toast" },
+    { name: "蛋牛治", nameEn: "Egg & Beef Sandwich", calories: 350, desc: "雞蛋 + 牛肉 + 麵包", descEn: "Egg + beef + bread" },
+    { name: "菠蘿包", nameEn: "Pineapple Bun", calories: 280, desc: "不含牛油", descEn: "Without butter" },
+    { name: "火腿蛋三文治", nameEn: "Ham & Egg Sandwich", calories: 320, desc: "火腿 + 雞蛋 + 麵包", descEn: "Ham + egg + bread" },
+    { name: "西多士", nameEn: "French Toast", calories: 450, desc: "油炸麵包 + 糖漿", descEn: "Deep-fried bread + syrup" },
+    { name: "焗飯", nameEn: "Baked Rice", calories: 680, desc: "芝士焗飯", descEn: "Cheese baked rice" },
+    { name: "意式粉", nameEn: "Spaghetti", calories: 480, desc: "番茄意粉", descEn: "Tomato spaghetti" },
+    { name: "咖喱飯", nameEn: "Curry Rice", calories: 580, desc: "咖喱 + 白飯", descEn: "Curry + rice" },
+];
+
+const teaDrinks = [
+    { name: "奶茶 (熱)", nameEn: "Milk Tea (Hot)", calories: 150, desc: "茶 + 淡奶", descEn: "Tea + evaporated milk" },
+    { name: "奶茶 (凍)", nameEn: "Milk Tea (Iced)", calories: 180, desc: "茶 + 淡奶 + 冰", descEn: "Tea + evaporated milk + ice" },
+    { name: "檸茶 (熱)", nameEn: "Lemon Tea (Hot)", calories: 80, desc: "茶 + 檸檬", descEn: "Tea + lemon" },
+    { name: "檸茶 (凍)", nameEn: "Lemon Tea (Iced)", calories: 100, desc: "茶 + 檸檬 + 糖 + 冰", descEn: "Tea + lemon + sugar + ice" },
+    { name: "鴛鴦", nameEn: "Yuen Yeung", calories: 180, desc: "咖啡 + 奶茶", descEn: "Coffee + milk tea" },
+    { name: "檸啡", nameEn: "Lemon Coffee", calories: 120, desc: "咖啡 + 檸檬", descEn: "Coffee + lemon" },
+    { name: "茶走", nameEn: "Tea with Condensed Milk", calories: 200, desc: "茶 + 煉奶", descEn: "Tea + condensed milk" },
+    { name: "啡走", nameEn: "Coffee with Condensed Milk", calories: 180, desc: "咖啡 + 煉奶", descEn: "Coffee + condensed milk" },
+    { name: "奶茶飛冰", nameEn: "Milk Tea Less Ice", calories: 150, desc: "少冰版本", descEn: "Less ice version" },
+    { name: "檸檬可乐", nameEn: "Lemon Cola", calories: 140, desc: "可乐 + 檸檬", descEn: "Cola + lemon" },
+    { name: "檸檬蘇打", nameEn: "Lemon Soda", calories: 100, desc: "蘇打水 + 檸檬", descEn: "Soda water + lemon" },
+    { name: "好立克", nameEn: "Horlicks", calories: 160, desc: "熱麥芽飲品", descEn: "Hot malt drink" },
+    { name: "阿華田", nameEn: "Ovaltine", calories: 150, desc: "熱朱古力飲品", descEn: "Hot chocolate drink" },
+    { name: "維他朱古力", nameEn: "Vita Chocolate", calories: 180, desc: "朱古力牛奶", descEn: "Chocolate milk" },
+    { name: "旺仔牛奶", nameEn: "Wang Zai Milk", calories: 120, desc: "盒裝朱古力奶", descEn: "Boxed chocolate milk" },
+];
+
+const cookingMethods = [
+    { name: "白灼/水煮", nameEn: "Boiled/Steamed", calChange: 0 },
+    { name: "蒸", nameEn: "Steamed", calChange: 0 },
+    { name: "烤/焗", nameEn: "Baked", calChange: 0 },
+    { name: "煎 (少油)", nameEn: "Pan-fried (less oil)", calChange: 40 },
+    { name: "炒", nameEn: "Stir-fried", calChange: 60 },
+    { name: "炸", nameEn: "Deep-fried", calChange: 150 },
+    { name: "燒烤", nameEn: "Grilled", calChange: 20 },
+    { name: "微波", nameEn: "Microwave", calChange: 0 }
+];
+
+const sauces = [
+    { name: "生抽", nameEn: "Light Soy Sauce", cal: 3 },
+    { name: "老抽", nameEn: "Dark Soy Sauce", cal: 5 },
+    { name: "蠔油", nameEn: "Oyster Sauce", cal: 10 },
+    { name: "麻油", nameEn: "Sesame Oil", cal: 15 },
+    { name: "食用油", nameEn: "Cooking Oil", cal: 40 },
+    { name: "辣椒醬", nameEn: "Chili Sauce", cal: 5 },
+    { name: "沙律醬", nameEn: "Salad Dressing", cal: 35 },
+    { name: "茄汁", nameEn: "Ketchup", cal: 8 },
+    { name: "咖喱醬", nameEn: "Curry Sauce", cal: 15 },
+    { name: "蜜糖", nameEn: "Honey", cal: 21 }
+];
+
+function t(key) {
+    const keys = key.split('.');
+    let val = i18n[currentLang];
+    for (const k of keys) val = val?.[k];
+    return val || key;
+}
+
+function getFoodName(food) {
+    return currentLang === 'zh' ? food.name : (food.nameEn || food.name);
+}
+
+function getWeightInGrams(weightStr) {
+    if (!weightStr) return 100; // Default
+    const num = parseFloat(weightStr);
+    if (isNaN(num)) return 100; // Default if parse fails
+    if (weightStr.includes('kg')) return num * 1000;
+    if (weightStr.includes('g')) return num;
+    return num * 100; // Default to 100g if no unit
+}
+
+// Calculate price per gram
+function getPricePerGram(price, weightStr) {
+    if (!price || !weightStr) return 0;
+    const grams = getWeightInGrams(weightStr);
+    if (grams <= 0) return 0;
+    return price / grams;
+}
+
+// Calculate price for needed amount (in grams)
+function calcPrice(price, weightStr, neededGrams) {
+    if (!price || !weightStr || !neededGrams) return 0;
+    const perGram = getPricePerGram(price, weightStr);
+    if (isNaN(perGram) || !isFinite(perGram)) return 0;
+    return perGram * neededGrams;
+}
+
+function getCategoryName(cat) {
+    if (currentLang === 'zh') return cat;
+    const map = { "全部": "All", "肉類": "Meat", "魚類": "Fish", "海鮮": "Seafood", "蔬菜": "Vegetables", "水果": "Fruit", "主食": "Grains", "蛋類": "Eggs", "豆類": "Beans", "奶類": "Dairy", "芝士": "Cheese" };
+    return map[cat] || cat;
+}
+
+function getCookingName(method) {
+    return currentLang === 'zh' ? method.name : (method.nameEn || method.name);
+}
+
+function getSauceName(sauce) {
+    return currentLang === 'zh' ? sauce.name : (sauce.nameEn || sauce.name);
+}
+
+function toggleLang() {
+    currentLang = currentLang === 'zh' ? 'en' : 'zh';
+    currentCategory = currentLang === 'zh' ? 'zh' : 'en';
+    document.getElementById('langToggle').textContent = currentLang === 'zh' ? 'EN' : '中';
+    updateUI();
+    renderCategoryFilters();
+    displayFoods(foodDatabase);
+    renderCookingMethods();
+    renderSauces();
+    populateFoodSelect();
+    renderTeaRestaurant();
+}
+
+function toggleDark() {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    document.getElementById('darkToggle').textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+function updateUI() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+    });
+    
+    // Toggle home page language
+    const homeZh = document.querySelector('.home-zh');
+    const homeEn = document.querySelector('.home-en');
+    if (homeZh && homeEn) {
+        if (currentLang === 'zh') {
+            homeZh.style.display = 'block';
+            homeEn.style.display = 'none';
+        } else {
+            homeZh.style.display = 'none';
+            homeEn.style.display = 'block';
+        }
+    }
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(tab).classList.remove('hidden');
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.classList.remove('tab-active');
+        btn.classList.add('tab-inactive');
+    });
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('tab-active');
+    document.querySelector(`[data-tab="${tab}"]`).classList.remove('tab-inactive');
+    updateUI();
+}
+
+function renderCategoryFilters() {
+    const cats = currentLang === 'zh' 
+        ? ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"]
+        : ["All", "Meat", "Fish", "Seafood", "Vegetables", "Fruit", "Grains", "Eggs", "Beans", "Dairy", "Cheese"];
+    document.getElementById('categoryFilters').innerHTML = cats.map((cat, idx) => {
+        const origCat = currentLang === 'zh' ? cat : ["全部", "肉類", "魚類", "海鮮", "蔬菜", "水果", "主食", "蛋類", "豆類", "奶類", "芝士"][idx];
+        return `<button class="px-4 py-2 rounded-full text-sm font-medium transition-colors ${currentCategory === origCat ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-700 hover:bg-primary/20'}" onclick="filterCategory('${origCat}')">${cat}</button>`;
+    }).join('');
+}
+
+function filterCategory(category) {
+    currentCategory = category;
+    renderCategoryFilters();
+    // Check if "All" is selected in either language (also handle old 'en'/'zh' values)
+    const isAll = category === "全部" || category === "All" || category === "en" || category === "zh";
+    const filtered = isAll ? foodDatabase : foodDatabase.filter(f => f.category === category);
+    // Clear search box when selecting All
+    if (isAll) {
+        document.getElementById('foodSearch').value = '';
+    }
+    displayFoods(filtered);
+}
+
+function displayFoods(foods) {
+    const query = document.getElementById('foodSearch').value.toLowerCase();
+    const filtered = foods.filter(food => getFoodName(food).toLowerCase().includes(query));
+    if (filtered.length === 0) {
+        document.getElementById('foodList').innerHTML = `<p class="text-center text-slate-400 py-8">${t('notFound')}</p>`;
+        return;
+    }
+    document.getElementById('foodList').innerHTML = filtered.map(food => `
+        <div class="food-card">
+            <div class="flex-1">
+                <div class="font-semibold text-lg"><span class="inline-block px-2 py-0.5 rounded text-xs font-medium ${food.source === '惠康' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'}">${food.source}</span> ${getFoodName(food)}</div>
+                <div class="text-sm text-slate-500">${food.weight} | ${getCategoryName(food.category)}</div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-red-500 font-semibold">HK$${food.price}</div>
+                <div class="bg-primary text-white px-3 py-1 rounded-full font-semibold">${food.calories} cal</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterFoods() {
+    const query = document.getElementById('foodSearch').value.toLowerCase();
+    const isAll = currentCategory === "全部" || currentCategory === "All" || currentCategory === "en" || currentCategory === "zh";
+    const filtered = isAll 
+        ? foodDatabase.filter(f => getFoodName(f).toLowerCase().includes(query))
+        : foodDatabase.filter(f => f.category === currentCategory && getFoodName(f).toLowerCase().includes(query));
+    displayFoods(filtered);
+}
+
+function renderCookingMethods() {
+    document.getElementById('cookingMethods').innerHTML = cookingMethods.map((method, idx) => `
+        <div class="border-2 ${selectedCooking === method ? 'border-primary bg-primary/10' : 'border-slate-200 dark:border-slate-700 hover:border-primary'} rounded-lg p-2 text-center cursor-pointer transition-colors" onclick="selectCooking(${idx})">
+            <div class="text-sm">${getCookingName(method)}</div>
+            <div class="text-xs text-slate-500">${method.calChange > 0 ? '+' + method.calChange : method.calChange}</div>
+        </div>
+    `).join('');
+}
+
+function selectCooking(idx) {
+    selectedCooking = cookingMethods[idx];
+    renderCookingMethods();
+}
+
+function renderTeaRestaurant() {
+    // Render dishes with selection
+    const dishesHtml = teaDishes.map((dish, idx) => {
+        const isSelected = teaSelections.some(s => s.name === dish.name && s.type === 'dish');
+        return `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'ring-2 ring-primary' : ''}" onclick="toggleTeaItem('dish', ${idx})">
+            <div class="flex-1">
+                <div class="font-semibold text-lg ${isSelected ? 'text-primary' : ''}">${currentLang === 'zh' ? dish.name : dish.nameEn}</div>
+                <div class="text-sm text-slate-500">${currentLang === 'zh' ? dish.desc : (dish.descEn || dish.desc)}</div>
+            </div>
+            <div class="bg-orange-500 text-white px-3 py-1 rounded-full font-semibold">${dish.calories} cal</div>
+        </div>
+    `}).join('');
+    document.getElementById('teaDishes').innerHTML = dishesHtml;
+    
+    // Render drinks with selection
+    const drinksHtml = teaDrinks.map((drink, idx) => {
+        const isSelected = teaSelections.some(s => s.name === drink.name && s.type === 'drink');
+        return `
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'ring-2 ring-primary' : ''}" onclick="toggleTeaItem('drink', ${idx})">
+            <div class="flex-1">
+                <div class="font-semibold text-lg ${isSelected ? 'text-primary' : ''}">${currentLang === 'zh' ? drink.name : drink.nameEn}</div>
+                <div class="text-sm text-slate-500">${currentLang === 'zh' ? drink.desc : (drink.descEn || drink.desc)}</div>
+            </div>
+            <div class="bg-pink-500 text-white px-3 py-1 rounded-full font-semibold">${drink.calories} cal</div>
+        </div>
+    `}).join('');
+    document.getElementById('teaDrinks').innerHTML = drinksHtml;
+    
+    // Update total display
+    updateTeaTotal();
+}
+
+function toggleTeaItem(type, idx) {
+    const item = type === 'dish' ? teaDishes[idx] : teaDrinks[idx];
+    const existingIdx = teaSelections.findIndex(s => s.name === item.name && s.type === type);
+    
+    if (existingIdx >= 0) {
+        teaSelections.splice(existingIdx, 1);
+    } else {
+        teaSelections.push({ ...item, type: type });
+    }
+    
+    renderTeaRestaurant();
+}
+
+function updateTeaTotal() {
+    const total = teaSelections.reduce((sum, item) => sum + item.calories, 0);
+    const totalEl = document.getElementById('teaTotal');
+    const listEl = document.getElementById('teaSelectedList');
+    
+    if (totalEl) {
+        totalEl.innerHTML = `<span class="text-xl font-bold">${total} cal</span>`;
+    }
+    
+    if (listEl) {
+        if (teaSelections.length === 0) {
+            listEl.innerHTML = `<p class="text-slate-400 text-center py-4">${currentLang === 'zh' ? '未選擇任何項目' : 'No items selected'}</p>`;
+        } else {
+            listEl.innerHTML = teaSelections.map((item, idx) => `
+                <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-700 last:border-0">
+                    <div>
+                        <span class="font-medium">${currentLang === 'zh' ? item.name : item.nameEn}</span>
+                        <span class="text-sm text-slate-500 ml-2">(${item.type === 'dish' ? (currentLang === 'zh' ? '主食' : 'Dish') : (currentLang === 'zh' ? '飲品' : 'Drink')})</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold">${item.calories} cal</span>
+                        <button onclick="removeTeaItem(${idx})" class="text-red-500 hover:text-red-700 text-xl font-bold">×</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+function removeTeaItem(idx) {
+    if (idx >= 0 && idx < teaSelections.length) {
+        teaSelections.splice(idx, 1);
+        renderTeaRestaurant();
+    }
+}
+
+function renderSauces() {
+    document.getElementById('sauceOptions').innerHTML = sauces.map((sauce, idx) => `
+        <div class="border-2 border-slate-200 dark:border-slate-700 rounded-lg p-2 text-center cursor-pointer text-sm transition-colors hover:border-primary" id="sauce-${idx}" onclick="toggleSauce(${idx})">
+            <div>${getSauceName(sauce)}</div>
+            <div class="text-xs text-slate-500">+${sauce.cal}</div>
+        </div>
+    `).join('');
+}
+
+function toggleSauce(idx) {
+    const sauce = sauces[idx];
+    const el = document.getElementById(`sauce-${idx}`);
+    if (selectedSauces.includes(sauce)) {
+        selectedSauces = selectedSauces.filter(s => s !== sauce);
+        el.classList.remove('border-primary', 'bg-primary/10');
+    } else {
+        selectedSauces.push(sauce);
+        el.classList.add('border-primary', 'bg-primary/10');
+    }
+}
+
+function populateFoodSelect() {
+    const select = document.getElementById('calcFood');
+    select.innerHTML = `<option value="">-- ${currentLang === 'zh' ? '選擇食物' : 'Select Food'} --</option>` + 
+        foodDatabase.map((f, i) => `<option value="${i}">${getFoodName(f)} (HK$${f.price})</option>`).join('');
+}
+
+function addToMeal() {
+    const foodIdx = document.getElementById('calcFood').value;
+    const weight = parseInt(document.getElementById('calcWeight').value);
+    if (foodIdx === "") { alert(currentLang === 'zh' ? '請選擇食物' : 'Please select a food'); return; }
+    
+    const food = foodDatabase[foodIdx];
+    const baseCalories = Math.round(food.calories * weight / 100);
+    const cookingCalories = selectedCooking.calChange;
+    const sauceCalories = selectedSauces.reduce((sum, s) => sum + s.cal, 0);
+    const totalCalories = baseCalories + cookingCalories + sauceCalories;
+    const price = Math.round(calcPrice(food.price, food.weight, weight) * 10) / 10;
+    
+    mealFoods.push({ food, weight, cooking: getCookingName(selectedCooking), sauces: [...selectedSauces], totalCalories, price });
+    updateMealDisplay();
+}
+
+function updateMealDisplay() {
+    const list = document.getElementById('mealItemsList');
+    if (mealFoods.length === 0) {
+        list.innerHTML = `<p class="text-slate-400">${currentLang === 'zh' ? '暫時未有選擇...' : 'No items selected yet...'}</p>`;
+        document.getElementById('totalCal').textContent = '0';
+        document.getElementById('totalPrice').textContent = '0';
+        return;
+    }
+    
+    let totalCal = 0, totalPrice = 0;
+    list.innerHTML = mealFoods.map((item, idx) => {
+        totalCal += item.totalCalories;
+        totalPrice += item.price;
+        const sauceNames = item.sauces.length > 0 ? `<div class="text-xs text-slate-500">+ ${item.sauces.map(s => getSauceName(s)).join(', ')}</div>` : '';
+        return `
+            <div class="flex justify-between items-center py-2 border-b border-slate-200 dark:border-slate-700 last:border-0">
+                <div>
+                    <strong>${getFoodName(item.food)}</strong> ${item.weight}g<br>
+                    <span class="text-sm text-slate-500">${item.cooking}</span>
+                    ${sauceNames}
+                </div>
+                <div class="text-right">
+                    <div class="font-semibold">${item.totalCalories} cal</div>
+                    <div class="text-sm text-slate-500">HK$${item.price.toFixed(1)}</div>
+                    <button class="text-red-500 text-lg" onclick="removeMealItem(${idx})">×</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('totalCal').textContent = totalCal;
+    document.getElementById('totalPrice').textContent = totalPrice.toFixed(1);
+}
+
+function removeMealItem(idx) { mealFoods.splice(idx, 1); updateMealDisplay(); }
+
+function selectGoal(goal) {
+    userStats.goal = goal;
+    document.querySelectorAll('#goalSelector > div').forEach(el => {
+        const isSelected = el.dataset.goal === goal;
+        el.classList.toggle('border-primary', isSelected);
+        el.classList.toggle('bg-emerald-50', isSelected);
+        el.classList.toggle('dark:bg-emerald-900/20', isSelected);
+        el.classList.toggle('border-slate-200', !isSelected);
+        el.classList.toggle('dark:border-slate-700', !isSelected);
+    });
+    if (userStats.tdee > 0) calculateStats();
+}
+
+function calculateStats() {
+    const age = parseInt(document.getElementById('age').value);
+    const height = parseInt(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const gender = document.getElementById('gender').value;
+    const activity = parseFloat(document.getElementById('activity').value);
+    
+    let bmr = gender === 'male' 
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+    
+    const tdee = Math.round(bmr * activity);
+    const heightM = height / 100;
+    const bmi = Math.round((weight / (heightM * heightM)) * 10) / 10;
+    
+    let target, goalName;
+    if (userStats.goal === 'lose') { target = tdee - 500; goalName = currentLang === 'zh' ? "減肥" : "Lose Weight"; }
+    else if (userStats.goal === 'gain') { target = tdee + 300; goalName = currentLang === 'zh' ? "增肌" : "Build Muscle"; }
+    else { target = tdee; goalName = currentLang === 'zh' ? "維持" : "Maintain"; }
+    
+    userStats = { bmr: Math.round(bmr), tdee, target: Math.max(target, 1200), bmi, goal: goalName };
+    localStorage.setItem('userStats', JSON.stringify(userStats));
+    
+    document.getElementById('bmiValue').textContent = bmi;
+    document.getElementById('bmrValue').textContent = Math.round(bmr);
+    document.getElementById('tdeeValue').textContent = tdee;
+    document.getElementById('targetValue').textContent = userStats.target;
+    
+    let category, categoryEn;
+    if (bmi < 18.5) { category = "體重過輕"; categoryEn = "Underweight"; }
+    else if (bmi < 25) { category = "正常範圍"; categoryEn = "Normal"; }
+    else if (bmi < 30) { category = "輕度過重"; categoryEn = "Overweight"; }
+    else { category = "過重"; categoryEn = "Obese"; }
+    
+    document.getElementById('bmiCategory').textContent = currentLang === 'zh' ? category : categoryEn;
+    
+    const tips = document.getElementById('personalTips');
+    const tipsZh = ["每日攝取 " + userStats.target + " 卡路里，每週約減 0.5kg", "你既基礎代謝率 (BMR) 係 " + Math.round(bmr) + " 卡路里"];
+    const tipsEn = ["Daily intake " + userStats.target + " calories, lose ~0.5kg/week", "Your BMR is " + Math.round(bmr) + " calories"];
+    tips.innerHTML = (currentLang === 'zh' ? tipsZh : tipsEn).map(t => `<li>${t}</li>`).join('');
+    
+    document.getElementById('statsResult').classList.remove('hidden');
+}
+
+function generateMealPlan() {
+    const targetCalories = userStats.target > 0 ? userStats.target : 1500;
+    
+    // Show warning if user hasn't set their profile
+    if (userStats.target === 0) {
+        const msg = currentLang === 'zh' 
+            ? "你仲未輸入個人資料！請先去「個人資料」輸入年齡、身高、體重，然後撳「計算 BMR 同 TDEE」。"
+            : "You haven't entered your profile yet! Please go to \"Profile\" tab, enter your age, height, weight, then click \"Calculate BMR & TDEE\".";
+        alert(msg);
+    }
+    const preference = document.getElementById('dietPreference').value;
+    
+    const meals = [
+        { name: currentLang === 'zh' ? "早餐" : "Breakfast", calories: targetCalories * 0.25 },
+        { name: currentLang === 'zh' ? "午餐" : "Lunch", calories: targetCalories * 0.35 },
+        { name: currentLang === 'zh' ? "晚餐" : "Dinner", calories: targetCalories * 0.30 },
+        { name: currentLang === 'zh' ? "小食" : "Snack", calories: targetCalories * 0.10 }
+    ];
+    
+    let proteinFoods = preference === 'vegetarian' 
+        ? foodDatabase.filter(f => ['豆類', "Beans", '蛋類', "Eggs", '奶類', "Dairy"].includes(f.category))
+        : foodDatabase.filter(f => ['肉類', "Meat", '魚類', "Fish", '豆類', "Beans"].includes(f.category));
+    
+    const carbFoods = foodDatabase.filter(f => f.category === "主食" || f.category === "Grains");
+    const vegFoods = foodDatabase.filter(f => f.category === "蔬菜" || f.category === "Vegetables");
+    const fruitFoods = foodDatabase.filter(f => f.category === "水果" || f.category === "Fruit");
+    
+    const getRandom = arr => arr[Math.floor(Math.random() * arr.length)];
+    
+    let html = '';
+    let totalPrice = 0;
+    
+    meals.forEach(meal => {
+        if (meal.calories < targetCalories * 0.08) return;
+        
+        const protein = getRandom(proteinFoods);
+        const carb = getRandom(carbFoods);
+        const veg = getRandom(vegFoods);
+        
+        const proteinAmt = Math.round(meal.calories * 0.4 / protein.calories * 100);
+        const carbAmt = Math.round(meal.calories * 0.35 / carb.calories * 100);
+        
+        const pPrice = calcPrice(protein.price, protein.weight, proteinAmt);
+        const cPrice = calcPrice(carb.price, carb.weight, carbAmt);
+        const vPrice = calcPrice(veg.price, veg.weight, 100);
+        totalPrice += pPrice + cPrice + vPrice;
+        
+        html += `<div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-4">
+            <div class="font-semibold text-primary-dark mb-2">${meal.name} (${Math.round(meal.calories)} cal)</div>
+            <div class="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700"><span>${getFoodName(protein)}</span><span>~${proteinAmt}g</span></div>
+            <div class="flex justify-between py-1 border-b border-slate-200 dark:border-slate-700"><span>${getFoodName(carb)}</span><span>~${carbAmt}g</span></div>
+            <div class="flex justify-between py-1"><span>${getFoodName(veg)}</span><span>1 portion</span></div>`;
+        
+        if (meal.name !== (currentLang === 'zh' ? "晚餐" : "Dinner")) {
+            const fruit = getRandom(fruitFoods);
+            html += `<div class="flex justify-between py-1"><span>${getFoodName(fruit)}</span><span>1 portion</span></div>`;
+            totalPrice += calcPrice(fruit.price, fruit.weight, 100);
+        }
+        
+        html += '</div>';
+    });
+    
+    // Safety check: ensure totalPrice is valid
+    if (!totalPrice || !isFinite(totalPrice) || isNaN(totalPrice)) {
+        totalPrice = 0;
+    }
+    
+    html += `<div class="bg-gradient-to-r from-primary to-emerald-600 text-white rounded-lg p-4 flex justify-between items-center"><span>${currentLang === 'zh' ? '每日總計:' : 'Daily Total:'}</span><span class="text-xl font-bold">${targetCalories} cal | HK$${totalPrice.toFixed(1)}</span></div>`;
+    
+    const tipsList = currentLang === 'zh' 
+        ? ["呢個餐單只供參考，每個人身體狀況不同", "建議配合適量運動", "每日飲 2-3 公升水", "進食順序: 蔬菜 -> 蛋白質 -> 碳水化合物"]
+        : ["This meal plan is for reference only, everyone's body is different", "Combine with appropriate exercise", "Drink 2-3 liters of water daily", "Eat in order: vegetables -> protein -> carbs"];
+    
+    html += `<div class="bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-primary p-4 rounded-r-lg mt-4">
+        <h3 class="font-semibold text-primary-dark mb-2">${currentLang === 'zh' ? '溫馨提示' : 'Tips'}</h3>
+        <ul class="list-disc list-inside text-sm space-y-1">${tipsList.map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`;
+    
+    document.getElementById('generatedPlan').innerHTML = html;
+}
+
+// Init - wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing...');
+    // Initialize selected cooking method
+    if (!selectedCooking && cookingMethods.length > 0) {
+        selectedCooking = cookingMethods[0];
+    }
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+        var darkBtn = document.getElementById('darkToggle');
+        if (darkBtn) darkBtn.textContent = '☀️';
+    }
+    renderCategoryFilters();
+    displayFoods(foodDatabase);
+    renderCookingMethods();
+    renderSauces();
+    populateFoodSelect();
+    renderTeaRestaurant();
+    updateUI();
+    console.log('Initialization complete');
+});
+</script>
+</body>
+</html>
