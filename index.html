@@ -78,201 +78,101 @@
 
         <!-- Home/Landing Tab -->
         <div id="home" class="tab-content">
-            <!-- Chinese Version -->
-            <div class="home-zh bg-white dark:bg-slate-900 rounded-3xl hidden" style="display: none;">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl">
+                <!-- Hero Section -->
                 <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
-                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
-                        卡路里幫手
-                    </h1>
-                    <p class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
-                        為香港人而設的個人化減肥方案
-                    </p>
+                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;" data-i18n="home.heroTitle">卡路里幫手</h1>
+                    <p class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;" data-i18n="home.heroSubtitle">為香港人而設的個人化減肥方案</p>
                     <div class="mt-12 flex justify-center gap-4">
-                        <button onclick="switchTab('profile')" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-all hover:scale-105">
-                            開始使用
-                        </button>
+                        <button onclick="switchTab('profile')" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-all hover:scale-105" data-i18n="home.ctaButton">開始使用</button>
                     </div>
                 </div>
 
+                <!-- Image Section -->
                 <div class="relative py-16 px-8 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-white dark:to-slate-900">
                     <div class="max-w-4xl mx-auto">
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                             <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop" alt="香港早餐" class="w-full h-96 object-cover">
                             <div class="absolute bottom-6 left-6 flex gap-3">
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 143 卡</span>
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 61 卡</span>
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 207 卡</span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 <span data-i18n="home.imgEgg">143 卡</span></span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 <span data-i18n="home.imgMilk">61 卡</span></span>
+                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 <span data-i18n="home.imgToast">207 卡</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Why Section -->
                 <div class="py-24 px-8 bg-white dark:bg-slate-900">
                     <div class="max-w-4xl mx-auto text-center">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">點解整呢個？</h2>
-                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6" data-i18n="home.whyTitle">點解整呢個？</h2>
+                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto" data-i18n="home.whyDesc">
                             幫助香港人唔使估下估計算卡路里，咁就可以喺茶餐廳、惠康、百佳放心食嘢減肥。
                         </p>
                     </div>
                 </div>
 
+                <!-- Features Section -->
                 <div class="py-24 px-8 bg-slate-50 dark:bg-slate-800">
                     <div class="max-w-5xl mx-auto">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-16 text-center">卡路里幫手可以做啲咩？</h2>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-16 text-center" data-i18n="home.featuresTitle">卡路里幫手可以做啲咩？</h2>
                         <div class="grid md:grid-cols-3 gap-12">
                             <div class="text-center">
                                 <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">📊</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">基礎代謝率計算</h3>
-                                <p class="text-slate-600 dark:text-slate-300">根據你既年齡、身高、體重、性別同活動量，計算每日所需卡路里</p>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.feature1Title">基礎代謝率計算</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.feature1Desc">根據你既年齡、身高、體重、性別同活動量，計算每日所需卡路里</p>
                             </div>
                             <div class="text-center">
                                 <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🍽️</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">餐單制定</h3>
-                                <p class="text-slate-600 dark:text-slate-300">自動生成個人化減肥餐單，根據你既目標同偏好</p>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.feature2Title">餐單制定</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.feature2Desc">自動生成個人化減肥餐單，根據你既目標同偏好</p>
                             </div>
                             <div class="text-center">
                                 <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🛒</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">超市價錢</h3>
-                                <p class="text-slate-600 dark:text-slate-300">顯示惠康、百佳既最新價錢，方便你既屋企煮埋一份</p>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.feature3Title">超市價錢</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.feature3Desc">顯示惠康、百佳既最新價錢，方便你既屋企煮埋一份</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- How to Use Section -->
                 <div class="py-24 px-8 bg-white dark:bg-slate-900">
                     <div class="max-w-5xl mx-auto">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">點樣用？</h2>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center" data-i18n="home.howTitle">點樣用？</h2>
                         <div class="grid md:grid-cols-3 gap-8">
                             <div class="text-center">
                                 <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">1</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">輸入個人資料</h3>
-                                <p class="text-slate-600 dark:text-slate-300">輸入你既年齡、身高、體重，計算 BMR 同每日所需卡路里</p>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.step1Title">輸入個人資料</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.step1Desc">輸入你既年齡、身高、體重，計算 BMR 同每日所需卡路里</p>
                             </div>
                             <div class="text-center">
                                 <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">2</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">搜尋本地食物</h3>
-                                <p class="text-slate-600 dark:text-slate-300">搜尋茶餐廳食物同超市食材，睇埋卡路里同價錢</p>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.step2Title">搜尋本地食物</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.step2Desc">搜尋茶餐廳食物同超市食材，睇埋卡路里同價錢</p>
                             </div>
                             <div class="text-center">
                                 <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">3</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">獲取餐單</h3>
-                                <p class="text-slate-600 dark:text-slate-300">一click生成個人化減肥餐單，跟住食就得</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    <div class="max-w-4xl mx-auto text-center">
-                        <h2 class="text-4xl md:text-5xl font-bold mb-8">了解更多</h2>
-                        <div class="flex justify-center gap-6 mb-12">
-                            <a href="https://github.com/roxoctoclaw/calorie-web" target="_blank" class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-medium hover:bg-slate-200 transition-all">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                GitHub
-                            </a>
-                        </div>
-                        <div class="text-sm text-slate-500">
-                            <p class="mb-2">資料來源:</p>
-                            <p>卡路里數據來自 USDA FoodData Central • 價錢來自惠康及百佳香港 2024</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- English Version -->
-            <div class="home-en bg-white dark:bg-slate-900 rounded-3xl hidden" style="display: none;">
-                <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
-                    <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
-                        Calorie Helper
-                    </h1>
-                    <p class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
-                        Personalised Weight Loss for Hong Kong
-                    </p>
-                    <div class="mt-12 flex justify-center gap-4">
-                        <button onclick="switchTab('profile')" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-all hover:scale-105">
-                            Get Started
-                        </button>
-                    </div>
-                </div>
-
-                <div class="relative py-16 px-8 bg-gradient-to-t from-slate-100 dark:from-slate-800 to-white dark:to-slate-900">
-                    <div class="max-w-4xl mx-auto">
-                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
-                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop" alt="Hong Kong Breakfast" class="w-full h-96 object-cover">
-                            <div class="absolute bottom-6 left-6 flex gap-3">
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍳 143 cal</span>
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🥛 61 cal</span>
-                                <span class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">🍞 207 cal</span>
+                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4" data-i18n="home.step3Title">獲取餐單</h3>
+                                <p class="text-slate-600 dark:text-slate-300" data-i18n="home.step3Desc">一click生成個人化減肥餐單，跟住食就得</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="py-24 px-8 bg-white">
-                    <div class="max-w-4xl mx-auto text-center">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6">WHY WE BUILT THIS</h2>
-                        <p class="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
-                            Empowering Hong Kong people to lose weight without guessing calories in local cha chaan teng & Wellcome/ParknShop food.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="py-24 px-8 bg-slate-50 dark:bg-slate-800">
-                    <div class="max-w-5xl mx-auto">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">WHAT IS CALORIE HELPER?</h2>
-                        <div class="grid md:grid-cols-3 gap-12">
-                            <div class="text-center">
-                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">📊</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">BMR Calculator</h3>
-                                <p class="text-slate-600 dark:text-slate-300">Calculate your daily calorie needs based on age, height, weight, gender and activity level</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🍽️</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Meal Planner</h3>
-                                <p class="text-slate-600 dark:text-slate-300">Auto-generate personalized diet plans based on your goals and preferences</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6"><span class="text-4xl">🛒</span></div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Supermarket Prices</h3>
-                                <p class="text-slate-600 dark:text-slate-300">Show latest prices from Wellcome & ParknShop for home cooking</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="py-24 px-8 bg-white dark:bg-slate-900">
-                    <div class="max-w-5xl mx-auto">
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-16 text-center">HOW TO USE</h2>
-                        <div class="grid md:grid-cols-3 gap-8">
-                            <div class="text-center">
-                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">1</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Enter Your Data</h3>
-                                <p class="text-slate-600 dark:text-slate-300">Input your age, height, weight to calculate BMR and daily calorie needs</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">2</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Search Local Foods</h3>
-                                <p class="text-slate-600 dark:text-slate-300">Search cha chaan teng food & supermarket ingredients with calories & prices</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="w-24 h-24 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl font-bold">3</div>
-                                <h3 class="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Get Your Plan</h3>
-                                <p class="text-slate-600 dark:text-slate-300">One-click generates personalized diet plan, just follow and eat</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- More Info Section -->
                 <div class="py-24 px-8 bg-slate-900 text-white">
                     <div class="max-w-4xl mx-auto text-center">
-                        <h2 class="text-4xl md:text-5xl font-bold mb-8">MORE INFORMATION</h2>
+                        <h2 class="text-4xl md:text-5xl font-bold mb-8" data-i18n="home.moreTitle">了解更多</h2>
                         <div class="flex justify-center gap-6 mb-12">
                             <a href="https://github.com/roxoctoclaw/calorie-web" target="_blank" class="inline-flex items-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-full font-medium hover:bg-slate-200 transition-all">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                                GitHub
+                                <span data-i18n="home.github">GitHub</span>
                             </a>
                         </div>
                         <div class="text-sm text-slate-500">
-                            <p class="mb-2">Data Sources:</p>
-                            <p>Calorie data from USDA FoodData Central • Prices from Wellcome & ParknShop Hong Kong 2024</p>
+                            <p class="mb-2" data-i18n="home.sourcesLabel">資料來源:</p>
+                            <p data-i18n="home.sourcesDesc">卡路里數據來自 USDA FoodData Central • 價錢來自惠康及百佳香港 2024</p>
                         </div>
                     </div>
                 </div>
@@ -468,6 +368,34 @@ const i18n = {
         title: "卡路里幫手",
         subtitle: "個人化減肥餐單 | 惠康/百佳價錢 | 根據你既身體數據",
         tab: { profile: "個人資料", search: "食物搜尋", calculator: "卡路里計算機", generator: "自動生成餐單", tearestaurant: "茶餐廳", home: "主頁" },
+        home: {
+            heroTitle: "卡路里幫手",
+            heroSubtitle: "為香港人而設的個人化減肥方案",
+            ctaButton: "開始使用",
+            imgEgg: "143 卡",
+            imgMilk: "61 卡",
+            imgToast: "207 卡",
+            whyTitle: "點解整呢個？",
+            whyDesc: "幫助香港人唔使估下估計算卡路里，咁就可以喺茶餐廳、惠康、百佳放心食嘢減肥。",
+            featuresTitle: "卡路里幫手可以做啲咩？",
+            feature1Title: "基礎代謝率計算",
+            feature1Desc: "根據你既年齡、身高、體重、性別同活動量，計算每日所需卡路里",
+            feature2Title: "餐單制定",
+            feature2Desc: "自動生成個人化減肥餐單，根據你既目標同偏好",
+            feature3Title: "超市價錢",
+            feature3Desc: "顯示惠康、百佳既最新價錢，方便你既屋企煮埋一份",
+            howTitle: "點樣用？",
+            step1Title: "輸入個人資料",
+            step1Desc: "輸入你既年齡、身高、體重，計算 BMR 同每日所需卡路里",
+            step2Title: "搜尋本地食物",
+            step2Desc: "搜尋茶餐廳食物同超市食材，睇埋卡路里同價錢",
+            step3Title: "獲取餐單",
+            step3Desc: "一click生成個人化減肥餐單，跟住食就得",
+            moreTitle: "了解更多",
+            github: "GitHub",
+            sourcesLabel: "資料來源:",
+            sourcesDesc: "卡路里數據來自 USDA FoodData Central • 價錢來自惠康及百佳香港 2024"
+        },
         profile: {
             title: "輸入你既個人資料",
             desc: "我會根據你既年齡、身高、體重計算每日所需卡路里",
@@ -504,6 +432,34 @@ const i18n = {
         title: "Calorie Helper",
         subtitle: "Personalized Diet Plan | HK Supermarket Prices | Based on Your Body Data",
         tab: { profile: "Profile", search: "Food Search", calculator: "Calculator", generator: "Meal Plan", tearestaurant: "Cha Chaan Teng", home: "Home" },
+        home: {
+            heroTitle: "Calorie Helper",
+            heroSubtitle: "Personalised Weight Loss for Hong Kong",
+            ctaButton: "Get Started",
+            imgEgg: "143 cal",
+            imgMilk: "61 cal",
+            imgToast: "207 cal",
+            whyTitle: "WHY WE BUILT THIS",
+            whyDesc: "Empowering Hong Kong people to lose weight without guessing calories in local cha chaan teng & Wellcome/ParknShop food.",
+            featuresTitle: "WHAT IS CALORIE HELPER?",
+            feature1Title: "BMR Calculator",
+            feature1Desc: "Calculate your daily calorie needs based on age, height, weight, gender and activity level",
+            feature2Title: "Meal Planner",
+            feature2Desc: "Auto-generate personalized diet plans based on your goals and preferences",
+            feature3Title: "Supermarket Prices",
+            feature3Desc: "Show latest prices from Wellcome & ParknShop for home cooking",
+            howTitle: "HOW TO USE",
+            step1Title: "Enter Your Data",
+            step1Desc: "Input your age, height, weight to calculate BMR and daily calorie needs",
+            step2Title: "Search Local Foods",
+            step2Desc: "Search cha chaan teng food & supermarket ingredients with calories & prices",
+            step3Title: "Get Your Plan",
+            step3Desc: "One-click generates personalized diet plan, just follow and eat",
+            moreTitle: "MORE INFORMATION",
+            github: "GitHub",
+            sourcesLabel: "Data Sources:",
+            sourcesDesc: "Calorie data from USDA FoodData Central • Prices from Wellcome & ParknShop Hong Kong 2024"
+        },
         profile: {
             title: "Enter Your Personal Data",
             desc: "I'll calculate your daily calorie needs based on age, height, weight",
