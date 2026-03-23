@@ -79,7 +79,7 @@
         <!-- Home/Landing Tab -->
         <div id="home" class="tab-content">
             <!-- Chinese Version -->
-            <div class="home-zh bg-white dark:bg-slate-900 rounded-3xl overflow-hidden" style="display: none;">
+            <div class="home-zh bg-white dark:bg-slate-900 rounded-3xl hidden" style="display: none;">
                 <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
                     <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
                         卡路里幫手
@@ -178,7 +178,7 @@
             </div>
 
             <!-- English Version -->
-            <div class="home-en bg-white dark:bg-slate-900 rounded-3xl overflow-hidden" style="display: none;">
+            <div class="home-en bg-white dark:bg-slate-900 rounded-3xl hidden" style="display: none;">
                 <div class="relative bg-gradient-to-b from-slate-50 dark:from-slate-800 to-white dark:to-slate-900 py-24 px-8 text-center">
                     <h1 class="text-6xl md:text-8xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight" style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;">
                         Calorie Helper
@@ -727,19 +727,6 @@ function updateUI() {
         const key = el.getAttribute('data-i18n-placeholder');
         el.placeholder = t(key);
     });
-    
-    // Toggle home page language
-    const homeZh = document.querySelector('.home-zh');
-    const homeEn = document.querySelector('.home-en');
-    if (homeZh && homeEn) {
-        if (currentLang === 'zh') {
-            homeZh.style.display = 'block';
-            homeEn.style.display = 'none';
-        } else {
-            homeZh.style.display = 'none';
-            homeEn.style.display = 'block';
-        }
-    }
 }
 
 function switchTab(tab) {
